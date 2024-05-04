@@ -1,24 +1,35 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View, Button , ScrollView} from 'react-native';
 import React,{useState} from 'react'; 
 
 export default function App() {
-const [ name, setName] = useState('george',);
-const [person, setPerson] = useState({name:'hghg' , age: 22});
+const [ people, setPeople] = useState([
+ {name:'giorgos', key:'1'},
+ {name:'mari', key:'2'},
+ {name:'stelios', key:'3'},
+ {name:'giannhs', key:'4'},
+ {name:'periklhe', key:'5'},
+ {name:'kaka', key:'6'},
+ {name:'paidi', key:'7'},
+]);
 
-const clickHandler = ()=>{
-  setName('chun-li');
-  setPerson({name:'giorgos',age:26})
-}
+
+
 
   return (
     <View style={styles.container}>
-      <Text>My name is{name}</Text>
-     <Text>ΤΟ ΟΝΟΜΑ ΤΗΣ ΕΙΝΑΙ{person.name}και η ηλικεια τησ ειναι {person.age}</Text>
-     <View style={styles.buttonConatiner}>
-          <Button title='Add new car' onPress={clickHandler}/>
-     </View>
-      <StatusBar style="auto" />
+      <ScrollView>
+      {people.map(item =>(
+        (
+          <View key={item.key}> 
+            <Text style={styles.item}>
+              {item.name}
+            </Text>
+          </View>
+        )
+      ))}
+      </ScrollView>
+     
     </View>
   );
 }
@@ -27,10 +38,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingTop:40,
+    paddingHorizontal:20,
+    //alignItems: 'center',
+   // justifyContent: 'center',
   },
-  buttonConatiner:{
-    
-  }
+ item:{
+  marginTop:44,
+  padding:30,
+  backgroundColor:'pink',
+  fontSize:34,
+ }
 });
