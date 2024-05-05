@@ -1,5 +1,5 @@
 import React, {useState} from 'react'; 
-import { StyleSheet, Text, TextInput, Button , View } from 'react-native';
+import { StyleSheet, Text, TextInput, Button , View ,} from 'react-native';
 
 
 export default function AddTodo({submitHandler}) {
@@ -10,6 +10,7 @@ const changeHandler = (val) => {
 
 }
     return (
+
         <View>
           <TextInput
             style={styles.input}

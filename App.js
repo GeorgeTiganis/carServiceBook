@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, FlatList, Alert} from 'react-native';
+import { StyleSheet, Text, View, FlatList, Alert,TouchableWithoutFeedback, Keyboard} from 'react-native';
 import React,{useState} from 'react'; 
 import Header from './components/header';
 import TodoItem from './components/todoitem';
@@ -40,6 +40,11 @@ const submitHandler = (text) => {
 }
 
   return (
+
+    <TouchableWithoutFeedback onPress={() =>{
+      Keyboard.dismiss();
+      console.log('dismissed keyboard')
+    }}>
     <View style={styles.container}>
          <Header/>
          <View style={styles.content}> 
@@ -57,6 +62,7 @@ const submitHandler = (text) => {
       
      
     </View>
+    </TouchableWithoutFeedback>
   );
 }
 
