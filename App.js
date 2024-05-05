@@ -1,5 +1,5 @@
 
-import { StyleSheet, Text, View, FlatList, } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Alert} from 'react-native';
 import React,{useState} from 'react'; 
 import Header from './components/header';
 import TodoItem from './components/todoitem';
@@ -22,13 +22,21 @@ const pressHandler = (key) => {
 }
 
 const submitHandler = (text) => {
-  setTodos((prevTodos) => {
-    return [
-      {text:text, key:Math.random().toString()},
-      ...prevTodos
-    ]
 
-  })
+  if (text.length > 3 ){
+    setTodos((prevTodos) => {
+      return [
+        {text:text, key:Math.random().toString()},
+        ...prevTodos
+      ]
+  
+    });
+  }else {
+      Alert.alert('oops!','Ξαναπροσπαθησε  , εχεις εισαγει λαθος χαρακτηρες',[
+        {text:'understood', onPess:() => console.log('alert closed')}
+      ]);
+  }
+ 
 }
 
   return (
