@@ -10,16 +10,15 @@ import 'react-native-gesture-handler';
 
 const Drawer = createDrawerNavigator();
 
-// Εδώ βάζουμε την γραμματοσειρά που θέλουμε
 const getFonts = () => Font.loadAsync({
   'roboto-regular': require('./assets/fonts/Roboto-Regular.ttf')
 });
 
 export default function App() {
   const [todos, setTodos] = useState([
-    { text: 'buy coffe', key: '1' },
-    { text: 'create my app', key: '2' },
-    { text: 'play on the switch', key: '3' }
+    { text: 'buy coffee', key: '1', category: 'Personal' },
+    { text: 'create my app', key: '2', category: 'Work' },
+    { text: 'play on the switch', key: '3', category: 'Personal' }
   ]);
 
   const pressHandler = (key) => {
@@ -28,11 +27,11 @@ export default function App() {
     });
   }
 
-  const submitHandler = (text) => {
+  const submitHandler = (text, category) => {
     if (text.length > 3) {
       setTodos((prevTodos) => {
         return [
-          { text: text, key: Math.random().toString() },
+          { text: text, key: Math.random().toString(), category: category },
           ...prevTodos
         ];
       });
