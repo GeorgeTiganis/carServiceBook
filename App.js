@@ -21,26 +21,44 @@ export default function App() {
     { text: 'play on the switch', key: '3', category: 'Personal' }
   ]);
 
+  const [trash, setTrash] = useState([]);
+
   const pressHandler = (key) => {
     setTodos((prevTodos) => {
-      return prevTodos.filter(todo => todo.key != key);
+      const todoToMove = prevTodos.find(todo => todo.key === key);
+      if (todoToMove) {
+        setTrash((prevTrash) => [todoToMove, ...prevTrash]);
+      }
+      return prevTodos.filter(todo => todo.key !== key);
     });
-  }
+  };
+
+  const permanentDeleteHandler = (key) => {
+    setTrash((prevTrash) => prevTrash.filter(todo => todo.key !== key));
+  };
+
+  const restoreHandler = (key) => {
+    setTrash((prevTrash) => {
+      const todoToRestore = prevTrash.find(todo => todo.key === key);
+      if (todoToRestore) {
+        setTodos((prevTodos) => [todoToRestore, ...prevTodos]);
+      }
+      return prevTrash.filter(todo => todo.key !== key);
+    });
+  };
 
   const submitHandler = (text, category) => {
     if (text.length > 3) {
-      setTodos((prevTodos) => {
-        return [
-          { text: text, key: Math.random().toString(), category: category },
-          ...prevTodos
-        ];
-      });
+      setTodos((prevTodos) => [
+        { text: text, key: Math.random().toString(), category: category },
+        ...prevTodos
+      ]);
     } else {
       Alert.alert('Oops!', 'Ξαναπροσπαθήστε, έχετε εισάγει λανθασμένους χαρακτήρες', [
         { text: 'Understood', onPress: () => console.log('alert closed') }
       ]);
     }
-  }
+  };
 
   return (
     <NavigationContainer>
@@ -49,7 +67,7 @@ export default function App() {
           {() => (
             <TouchableWithoutFeedback onPress={() => {
               Keyboard.dismiss();
-              console.log('dismissed keyboard')
+              console.log('dismissed keyboard');
             }}>
               <View style={styles.container}>
                 <Header />
@@ -66,6 +84,24 @@ export default function App() {
                 </View>
               </View>
             </TouchableWithoutFeedback>
+          )}
+        </Drawer.Screen>
+        <Drawer.Screen name="Trash">
+          {() => (
+            <View style={styles.container}>
+              <Header />
+              <View style={styles.content}>
+                <Text>Trashed Items</Text>
+                <View style={styles.lists}>
+                  <FlatList
+                    data={trash}
+                    renderItem={({ item }) => (
+                      <TodoItem item={item} pressHandler={permanentDeleteHandler} restoreHandler={restoreHandler} isTrash />
+                    )}
+                  />
+                </View>
+              </View>
+            </View>
           )}
         </Drawer.Screen>
         <Drawer.Screen name="About" component={AboutScreen} />

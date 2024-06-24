@@ -7,7 +7,7 @@ import image3 from '../assets/image3.jpg'; // Adjust the path based on your proj
 export default function Header() {
     const images = [image1, image2, image3];
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const fadeAnim = useRef(new Animated.Value(2)).current;
+    const fadeAnim = useRef(new Animated.Value(3)).current;
 
     useEffect(() => {
         const intervalId = setInterval(() => {
