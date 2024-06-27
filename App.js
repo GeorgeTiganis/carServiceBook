@@ -7,6 +7,7 @@ import TodoItem from './components/todoitem';
 import AddTodo from './components/addTodo';
 import * as Font from 'expo-font';
 import 'react-native-gesture-handler';
+import CustomDrawerContent from './components/CustomDrawerContent';
 
 const Drawer = createDrawerNavigator();
 
@@ -62,7 +63,7 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Drawer.Navigator initialRouteName="Home">
+      <Drawer.Navigator initialRouteName="Home" drawerContent={(props) => <CustomDrawerContent {...props} />}>
         <Drawer.Screen name="Home">
           {() => (
             <TouchableWithoutFeedback onPress={() => {
@@ -105,6 +106,9 @@ export default function App() {
           )}
         </Drawer.Screen>
         <Drawer.Screen name="About" component={AboutScreen} />
+        <Drawer.Screen name="All vehicles" component={AllVehicles} />
+        <Drawer.Screen name="History" component={History} />
+        <Drawer.Screen name="NextService" component={NextService} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
@@ -116,6 +120,39 @@ function AboutScreen() {
       <Header />
       <View style={styles.content}>
         <Text>About Screen</Text>
+      </View>
+    </View>
+  );
+}
+
+function AllVehicles() {
+  return (
+    <View style={styles.container}>
+      <Header />
+      <View style={styles.content}>
+        <Text>All vehicles</Text>
+      </View>
+    </View>
+  );
+}
+
+function History() {
+  return (
+    <View style={styles.container}>
+      <Header />
+      <View style={styles.content}>
+        <Text>History</Text>
+      </View>
+    </View>
+  );
+}
+
+function NextService() {
+  return (
+    <View style={styles.container}>
+      <Header />
+      <View style={styles.content}>
+        <Text>Next service</Text>
       </View>
     </View>
   );
