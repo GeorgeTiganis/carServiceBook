@@ -161,7 +161,7 @@ function NextService() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#cc0000',
   },
   content: {
     padding: 40,
