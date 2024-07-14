@@ -1,4 +1,5 @@
-// TodoItem.js
+// components/TodoItem.js
+
 import React, { useState, useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -20,7 +21,6 @@ export default function TodoItem({ item, pressHandler, restoreHandler, isTrash =
           text: 'Cancel',
           onPress: () => {
             setIsDeleting(false);
-            console.log('Cancel Pressed');
           },
           style: 'cancel'
         },
@@ -47,7 +47,6 @@ export default function TodoItem({ item, pressHandler, restoreHandler, isTrash =
           text: 'Cancel',
           onPress: () => {
             setIsDeleting(false);
-            console.log('Cancel Pressed');
           },
           style: 'cancel'
         },
@@ -76,7 +75,7 @@ export default function TodoItem({ item, pressHandler, restoreHandler, isTrash =
             setTimeout(() => {
               restoreHandler(key);
               setShowTick(false);
-            }, 1500); // Adjust the duration to match the length of your animation
+            }, 1500);
           }
         }
       ],
@@ -89,15 +88,13 @@ export default function TodoItem({ item, pressHandler, restoreHandler, isTrash =
       const soundObject = new Audio.Sound();
       await soundObject.loadAsync(require('../assets/sound/delete.mp3'));
       await soundObject.playAsync();
-      // Optionally unload the sound after playing
-      // await soundObject.unloadAsync();
     } catch (error) {
       console.log('Error playing sound:', error);
     }
   };
 
   return (
-    <View>
+    <View style={styles.item}>
       {showTick && (
         <View style={styles.overlay}>
           <LottieView
@@ -109,7 +106,7 @@ export default function TodoItem({ item, pressHandler, restoreHandler, isTrash =
           />
         </View>
       )}
-      <View style={[styles.item, isDeleting && { backgroundColor: 'red' }]}>
+      <View style={[styles.itemContent, isDeleting && { backgroundColor: 'red' }]}>
         {isTrash && (
           <TouchableOpacity onPress={() => confirmRestore(item.key)}>
             <MaterialIcons name='restore' size={25} color='#00cc00' />
@@ -129,12 +126,17 @@ export default function TodoItem({ item, pressHandler, restoreHandler, isTrash =
 
 const styles = StyleSheet.create({
   item: {
-    padding: 16,
-    marginTop: 16,
+    flex: 1,
+    margin: 10,
     borderColor: 'red',
     borderWidth: 1,
     borderStyle: 'dashed',
     borderRadius: 10,
+    alignItems: 'center',
+  },
+  itemContent: {
+    width: '100%',
+    padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -162,4 +164,3 @@ const styles = StyleSheet.create({
     height: '100%',
   },
 });
-
