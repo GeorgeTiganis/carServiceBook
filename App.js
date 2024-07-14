@@ -11,6 +11,12 @@ import CustomDrawerContent from './components/CustomDrawerContent';
 import AllVehicles from './components/AllVehicles';  
 import NextService from './components/NextService';  // Προσθήκη της εισαγωγής για το νέο component
 
+
+
+
+
+
+
 const Drawer = createDrawerNavigator();
 
 const getFonts = () => Font.loadAsync({
