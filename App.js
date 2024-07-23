@@ -10,7 +10,7 @@ import 'react-native-gesture-handler';
 import CustomDrawerContent from './components/CustomDrawerContent';
 import AllVehicles from './components/AllVehicles';  
 import NextService from './components/NextService';  // Προσθήκη της εισαγωγής για το νέο component
-
+import HistoryService from './components/HistoryService';
 
 
 
@@ -95,6 +95,7 @@ export default function App() {
         </Drawer.Screen>
         <Drawer.Screen name="History" component={History} />
         <Drawer.Screen name="NextService" component={NextService} />
+        <Drawer.Screen name="HistoryService" component={HistoryService} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
