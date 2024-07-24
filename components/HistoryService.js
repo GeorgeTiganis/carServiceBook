@@ -16,12 +16,20 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { launchImageLibrary } from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import SelectType from './SelectType';
+import ImagesTab from './ImagesTab'; // Import the new ImagesTab component
 
 export default function HistoryService({ todos, pressHandler }) {
   const [activeTab, setActiveTab] = useState('BasicInfo');
   const [selectedItems, setSelectedItems] = useState({});
   const [isEditing, setIsEditing] = useState(false);
-  const [basicInfo, setBasicInfo] = useState({ title: '', date: new Date(), serviceType: '' });
+  const [basicInfo, setBasicInfo] = useState({
+    title: '',
+    date: new Date(),
+    serviceType: '',
+    mileage: '',
+    cost: '',
+    notes: '',
+  });
   const [isDateSelected, setIsDateSelected] = useState(false);
   const [maintenanceData, setMaintenanceData] = useState([
     'Τακτική Συντήρηση', // Εδώ είναι η νέα επιλογή
@@ -37,6 +45,9 @@ export default function HistoryService({ todos, pressHandler }) {
   const titleLabelAnim = useRef(new Animated.Value(0)).current;
   const dateLabelAnim = useRef(new Animated.Value(0)).current;
   const serviceTypeLabelAnim = useRef(new Animated.Value(0)).current;
+  const mileageLabelAnim = useRef(new Animated.Value(0)).current;
+  const costLabelAnim = useRef(new Animated.Value(0)).current;
+  const notesLabelAnim = useRef(new Animated.Value(0)).current;
 
   const animateLabel = (animation, toValue) => {
     Animated.timing(animation, {
@@ -84,193 +95,339 @@ export default function HistoryService({ todos, pressHandler }) {
     animateLabel(serviceTypeLabelAnim, 1);
   };
 
+  const handleEditPress = () => {
+    setIsEditing(true);
+  };
+
+  const handleSavePress = () => {
+    setIsEditing(false);
+    // Perform save operation here
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'BasicInfo':
-        return isEditing ? (
-          <ScrollView>
-            <View style={styles.inputContainer}>
-              <Animated.Text
-                style={[
-                  styles.label,
-                  {
-                    top: titleLabelAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [20, -10],
-                    }),
-                    fontSize: titleLabelAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [16, 12],
-                    }),
-                    color: '#333', // Ensure the label is visible
-                  },
-                ]}
-              >
-                Όνομα Service
-              </Animated.Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Τίτλος Service"
-                placeholderTextColor="#999"
-                value={basicInfo.title}
-                onFocus={() => animateLabel(titleLabelAnim, 1)}
-                onBlur={() => {
-                  if (!basicInfo.title) {
-                    animateLabel(titleLabelAnim, 0);
-                  }
-                }}
-                onChangeText={(text) => setBasicInfo({ ...basicInfo, title: text })}
-              />
-              <Animated.View
-                style={[
-                  styles.underline,
-                  {
-                    transform: [
+        return (
+          <>
+            {isEditing ? (
+              <ScrollView>
+                <View style={styles.inputContainer}>
+                  <Animated.Text
+                    style={[
+                      styles.label,
                       {
-                        scaleX: titleLabelAnim.interpolate({
+                        top: titleLabelAnim.interpolate({
                           inputRange: [0, 1],
-                          outputRange: [0, 1],
+                          outputRange: [20, -10],
                         }),
+                        fontSize: titleLabelAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [16, 12],
+                        }),
+                        color: '#333', // Ensure the label is visible
                       },
-                    ],
-                  },
-                ]}
-              />
-            </View>
-            <View style={styles.inputContainer}>
-              <Animated.Text
-                style={[
-                  styles.label,
-                  {
-                    top: dateLabelAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [20, -10],
-                    }),
-                    fontSize: dateLabelAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [16, 12],
-                    }),
-                    color: '#333', // Ensure the label is visible
-                  },
-                ]}
-              >
-                Ημερομηνία
-              </Animated.Text>
-              <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Ημερομηνία"
-                  placeholderTextColor="#999"
-                  value={isDateSelected ? basicInfo.date.toLocaleDateString() : ''}
-                  editable={false}
-                  onFocus={() => animateLabel(dateLabelAnim, 1)}
-                  onBlur={() => {
-                    if (!isDateSelected) {
-                      animateLabel(dateLabelAnim, 0);
-                    }
-                  }}
-                />
-              </TouchableOpacity>
-              <Animated.View
-                style={[
-                  styles.underline,
-                  {
-                    transform: [
+                    ]}
+                  >
+                    Όνομα Service
+                  </Animated.Text>
+                  <TextInput
+                    style={styles.input}
+                    value={basicInfo.title}
+                    onFocus={() => animateLabel(titleLabelAnim, 1)}
+                    onBlur={() => {
+                      if (!basicInfo.title) {
+                        animateLabel(titleLabelAnim, 0);
+                      }
+                    }}
+                    onChangeText={(text) => setBasicInfo({ ...basicInfo, title: text })}
+                  />
+                  <Animated.View
+                    style={[
+                      styles.underline,
                       {
-                        scaleX: dateLabelAnim.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [0, 1],
-                        }),
+                        transform: [
+                          {
+                            scaleX: titleLabelAnim.interpolate({
+                              inputRange: [0, 1],
+                              outputRange: [0, 1],
+                            }),
+                          },
+                        ],
                       },
-                    ],
-                  },
-                ]}
-              />
-            </View>
-            <View style={styles.inputContainer}>
-              <Animated.Text
-                style={[
-                  styles.label,
-                  {
-                    top: serviceTypeLabelAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [20, -10],
-                    }),
-                    fontSize: serviceTypeLabelAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [16, 12],
-                    }),
-                    color: '#333', // Ensure the label is visible
-                  },
-                ]}
-              >
-                Επιλέξτε Τύπο Service
-              </Animated.Text>
-              <TouchableOpacity
-                style={styles.input}
-                onPress={() => setIsModalVisible(true)}
-              >
-                <Text style={styles.placeholderText}>
-                  {basicInfo.serviceType || 'Επιλέξτε Τύπο Service'}
+                    ]}
+                  />
+                </View>
+                <View style={styles.inputContainer}>
+                  <Animated.Text
+                    style={[
+                      styles.label,
+                      {
+                        top: dateLabelAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [20, -10],
+                        }),
+                        fontSize: dateLabelAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [16, 12],
+                        }),
+                        color: '#333', // Ensure the label is visible
+                      },
+                    ]}
+                  >
+                    Ημερομηνία
+                  </Animated.Text>
+                  <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+                    <TextInput
+                      style={styles.input}
+                      value={isDateSelected ? basicInfo.date.toLocaleDateString() : ''}
+                      editable={false}
+                      onFocus={() => animateLabel(dateLabelAnim, 1)}
+                      onBlur={() => {
+                        if (!isDateSelected) {
+                          animateLabel(dateLabelAnim, 0);
+                        }
+                      }}
+                    />
+                  </TouchableOpacity>
+                  <Animated.View
+                    style={[
+                      styles.underline,
+                      {
+                        transform: [
+                          {
+                            scaleX: dateLabelAnim.interpolate({
+                              inputRange: [0, 1],
+                              outputRange: [0, 1],
+                            }),
+                          },
+                        ],
+                      },
+                    ]}
+                  />
+                </View>
+                <View style={styles.inputContainer}>
+                  <Animated.Text
+                    style={[
+                      styles.label,
+                      {
+                        top: serviceTypeLabelAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [20, -10],
+                        }),
+                        fontSize: serviceTypeLabelAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [16, 12],
+                        }),
+                        color: '#333', // Ensure the label is visible
+                      },
+                    ]}
+                  >
+                    Επιλέξτε Τύπο Service
+                  </Animated.Text>
+                  <TouchableOpacity
+                    style={styles.input}
+                    onPress={() => setIsModalVisible(true)}
+                  >
+                    <Text >
+                      {basicInfo.serviceType }
+                    </Text>
+                  </TouchableOpacity>
+                  <Animated.View
+                    style={[
+                      styles.underline,
+                      {
+                        transform: [
+                          {
+                            scaleX: serviceTypeLabelAnim.interpolate({
+                              inputRange: [0, 1],
+                              outputRange: [0, 1],
+                            }),
+                          },
+                        ],
+                      },
+                    ]}
+                  />
+                </View>
+                <View style={styles.inputContainer}>
+                  <Animated.Text
+                    style={[
+                      styles.label,
+                      {
+                        top: mileageLabelAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [20, -10],
+                        }),
+                        fontSize: mileageLabelAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [16, 12],
+                        }),
+                        color: '#333', // Ensure the label is visible
+                      },
+                    ]}
+                  >
+                    Διανυθέντα Χιλιόμετρα
+                  </Animated.Text>
+                  <TextInput
+                    style={styles.input}
+                    keyboardType="numeric" // Ensure the keyboard is numeric
+                    value={basicInfo.mileage}
+                    onFocus={() => animateLabel(mileageLabelAnim, 1)}
+                    onBlur={() => {
+                      if (!basicInfo.mileage) {
+                        animateLabel(mileageLabelAnim, 0);
+                      }
+                    }}
+                    onChangeText={(text) => setBasicInfo({ ...basicInfo, mileage: text })}
+                  />
+                  <Animated.View
+                    style={[
+                      styles.underline,
+                      {
+                        transform: [
+                          {
+                            scaleX: mileageLabelAnim.interpolate({
+                              inputRange: [0, 1],
+                              outputRange: [0, 1],
+                            }),
+                          },
+                        ],
+                      },
+                    ]}
+                  />
+                </View>
+                <View style={styles.inputContainer}>
+                  <Animated.Text
+                    style={[
+                      styles.label,
+                      {
+                        top: costLabelAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [20, -10],
+                        }),
+                        fontSize: costLabelAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [16, 12],
+                        }),
+                        color: '#333', // Ensure the label is visible
+                      },
+                    ]}
+                  >
+                    Κόστος
+                  </Animated.Text>
+                  <TextInput
+                    style={styles.input}
+                    keyboardType="numeric" // Ensure the keyboard is numeric
+                    value={basicInfo.cost}
+                    onFocus={() => animateLabel(costLabelAnim, 1)}
+                    onBlur={() => {
+                      if (!basicInfo.cost) {
+                        animateLabel(costLabelAnim, 0);
+                      }
+                    }}
+                    onChangeText={(text) => setBasicInfo({ ...basicInfo, cost: text })}
+                  />
+                  <Animated.View
+                    style={[
+                      styles.underline,
+                      {
+                        transform: [
+                          {
+                            scaleX: costLabelAnim.interpolate({
+                              inputRange: [0, 1],
+                              outputRange: [0, 1],
+                            }),
+                          },
+                        ],
+                      },
+                    ]}
+                  />
+                </View>
+                <View style={styles.inputContainer}>
+                  <Animated.Text
+                    style={[
+                      styles.label,
+                      {
+                        top: notesLabelAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [20, -10],
+                        }),
+                        fontSize: notesLabelAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [16, 12],
+                        }),
+                        color: '#333', // Ensure the label is visible
+                      },
+                    ]}
+                  >
+                    Σημειώσεις
+                  </Animated.Text>
+                  <TextInput
+                    style={styles.textArea}
+                    value={basicInfo.notes}
+                    onFocus={() => animateLabel(notesLabelAnim, 1)}
+                    onBlur={() => {
+                      if (!basicInfo.notes) {
+                        animateLabel(notesLabelAnim, 0);
+                      }
+                    }}
+                    onChangeText={(text) => setBasicInfo({ ...basicInfo, notes: text })}
+                    multiline={true}
+                    numberOfLines={4}
+                  />
+                  <Animated.View
+                    style={[
+                      styles.underline,
+                      {
+                        transform: [
+                          {
+                            scaleX: notesLabelAnim.interpolate({
+                              inputRange: [0, 1],
+                              outputRange: [0, 1],
+                            }),
+                          },
+                        ],
+                      },
+                    ]}
+                  />
+                </View>
+                <TouchableOpacity style={styles.saveButton} onPress={handleSavePress}>
+                  <Text style={styles.saveButtonText}>Αποθήκευση</Text>
+                </TouchableOpacity>
+              </ScrollView>
+            ) : (
+              <>
+                <Text style={styles.infoText}>Όνομα Service: {basicInfo.title}</Text>
+                <Text style={styles.infoText}>
+                  Ημερομηνία: {basicInfo.date.toLocaleDateString()}
                 </Text>
-              </TouchableOpacity>
-              <Animated.View
-                style={[
-                  styles.underline,
-                  {
-                    transform: [
-                      {
-                        scaleX: serviceTypeLabelAnim.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [0, 1],
-                        }),
-                      },
-                    ],
-                  },
-                ]}
-              />
-            </View>
-            {showDatePicker && (
-              <DateTimePicker
-                value={basicInfo.date}
-                mode="date"
-                display="default"
-                onChange={onDateChange}
-              />
+                <Text style={styles.infoText}>Τύπος Service: {basicInfo.serviceType}</Text>
+                <Text style={styles.infoText}>Διανυθέντα Χιλιόμετρα: {basicInfo.mileage}</Text>
+                <Text style={styles.infoText}>Κόστος: {basicInfo.cost}</Text>
+                <Text style={styles.infoText}>Σημειώσεις: {basicInfo.notes}</Text>
+                <TouchableOpacity style={styles.editButton} onPress={handleEditPress}>
+                  <Text style={styles.editButtonText}>Επεξεργασία</Text>
+                </TouchableOpacity>
+              </>
             )}
-            {/* Add other fields similarly */}
-          </ScrollView>
-        ) : (
-          <View>
-            <Text>Τίτλος Service: {basicInfo.title}</Text>
-            <Text>Ημερομηνία: {basicInfo.date.toLocaleDateString()}</Text>
-            <Text>Τύπος Service: {basicInfo.serviceType}</Text>
-            {/* Display other fields similarly */}
-          </View>
+          </>
         );
-      case 'Maintenance':
+      case 'History':
         return (
           <FlatList
-            data={maintenanceData}
-            renderItem={({ item, index }) => (
-              <TouchableOpacity
-                style={styles.toggleButton}
-                onPress={() => isEditing && toggleItem(index)}
-              >
-                <Text style={styles.toggleText}>
-                  {selectedItems[index] ? '✓' : '⨯'} {item}
-                </Text>
+            data={todos}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => pressHandler(item.key)}>
+                <Text style={styles.item}>{item.text}</Text>
               </TouchableOpacity>
             )}
-            keyExtractor={(item, index) => index.toString()}
           />
         );
-      case 'Photos':
+      case 'Images':
         return (
-          <View style={styles.photoContainer}>
-            {photo && <Image source={{ uri: photo }} style={styles.photo} />}
-            <TouchableOpacity onPress={openImagePicker} style={styles.uploadButton}>
-              <Icon name="camera-outline" size={30} color="#fff" />
+          <View style={styles.imageContainer}>
+            {photo && <Image source={{ uri: photo }} style={styles.image} />}
+            <TouchableOpacity onPress={openImagePicker} style={styles.imageButton}>
+              <Text style={styles.imageButtonText}>Add Image</Text>
             </TouchableOpacity>
           </View>
         );
@@ -279,65 +436,56 @@ export default function HistoryService({ todos, pressHandler }) {
     }
   };
 
-  const handleTabPress = (tab) => {
-    setActiveTab(tab);
-    if (tab === 'Photos') {
-      openImagePicker();
-    }
-  };
-
-  const handleEditPress = () => {
-    setIsEditing(true);
-  };
-
-  const handleSavePress = () => {
-    setIsEditing(false);
-    // Save logic here if needed
-  };
-
   return (
     <View style={styles.container}>
-      
       <View style={styles.tabContainer}>
         <TouchableOpacity
-          style={[styles.tab, activeTab === 'BasicInfo' && styles.activeTab]}
-          onPress={() => handleTabPress('BasicInfo')}
+          style={[
+            styles.tabButton,
+            activeTab === 'BasicInfo' && styles.activeTabButton,
+          ]}
+          onPress={() => setActiveTab('BasicInfo')}
         >
-          <Icon name="information-circle-outline" size={20} color={activeTab === 'BasicInfo' ? '#007BFF' : '#000'} />
-          <Text>Βασικές Πληροφορίες</Text>
+          <Icon name="information-circle-outline" size={24} color="#FFF" />
+          <Text style={styles.tabButtonText}>Basic Info</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.tab, activeTab === 'Maintenance' && styles.activeTab]}
-          onPress={() => handleTabPress('Maintenance')}
+          style={[
+            styles.tabButton,
+            activeTab === 'maintenance' && styles.activeTabButton,
+          ]}
+          onPress={() => setActiveTab('maintenance')}
         >
-          <Icon name="build-outline" size={20} color={activeTab === 'Maintenance' ? '#007BFF' : '#000'} />
-          <Text>Συντήρηση</Text>
+          <Icon name="settings-outline" size={24} color="#FFF" />
+          <Text style={styles.tabButtonText}>Maintenance</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.tab, activeTab === 'Photos' && styles.activeTab]}
-          onPress={() => handleTabPress('Photos')}
+          style={[
+            styles.tabButton,
+            activeTab === 'Images' && styles.activeTabButton,
+          ]}
+          onPress={() => setActiveTab('Images')}
         >
-          <Icon name="camera-outline" size={20} color={activeTab === 'Photos' ? '#007BFF' : '#000'} />
-          <Text>Φωτογραφία</Text>
+          <Icon name="image-outline" size={24} color="#FFF" />
+          <Text style={styles.tabButtonText}>Images</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.editButton} onPress={handleEditPress}>
-          <Text>Επεξεργασία</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.saveButton} onPress={handleSavePress}>
-          <Text>Αποθήκευση</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.content}>
-        {renderTabContent()}
-      </View>
-      <SelectType
-        isVisible={isModalVisible}
-        onClose={() => setIsModalVisible(false)}
-        onSelect={handleServiceTypeSelection}
-        options={maintenanceData}
-      />
+      <View style={styles.contentContainer}>{renderTabContent()}</View>
+      {showDatePicker && (
+        <DateTimePicker
+          value={basicInfo.date}
+          mode="date"
+          display="default"
+          onChange={onDateChange}
+        />
+      )}
+      {isModalVisible && (
+        <SelectType
+          items={maintenanceData}
+          onSelect={handleServiceTypeSelection}
+          onCancel={() => setIsModalVisible(false)}
+        />
+      )}
     </View>
   );
 }
@@ -345,118 +493,113 @@ export default function HistoryService({ todos, pressHandler }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f2f2f2',
   },
   tabContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    backgroundColor: '#6200ee',
+    paddingVertical: 10,
   },
-  tab: {
-    padding: 10,
-    flex: 1,
+  tabButton: {
     alignItems: 'center',
-  },
-  activeTab: {
-    borderBottomWidth: 2,
-    borderBottomColor: '#007BFF',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
     padding: 10,
   },
-  editButton: {
-    padding: 10,
-    backgroundColor: '#f0ad4e',
-    borderRadius: 5,
+  activeTabButton: {
+    backgroundColor: '#3700b3',
+    borderRadius: 20,
   },
-  saveButton: {
-    padding: 10,
-    backgroundColor: '#5cb85c',
-    borderRadius: 5,
+  tabButtonText: {
+    color: '#FFF',
+    marginTop: 5,
   },
-  content: {
+  contentContainer: {
+    flex: 1,
     padding: 20,
   },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    position: 'absolute',
-    backgroundColor: 'white',
-    left: 10,
-    zIndex: 1,
-    paddingHorizontal: 5,
-    color: '#333', // Ensure the label is visible
-  },
   inputContainer: {
-    position: 'relative',
-    marginBottom: 40,
+    marginBottom: 35,
+  },
+  label: {
+    position: 'absolute',
+    left: 10,
+    top: 20,
+    color: '#777',
   },
   input: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    fontSize: 16,
+    color: '#333',
+  },
+  textArea: {
     borderWidth: 1,
-    borderRadius: 5,
-    height: 50,
-    paddingHorizontal: 8,
-    paddingVertical: 6,
+    borderColor: '#ccc',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    fontSize: 16,
+    color: '#333',
+    height: 100,
+    textAlignVertical: 'top',
   },
   underline: {
     height: 2,
-    backgroundColor: '#007BFF',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
+    backgroundColor: '#6200ee',
+    marginTop: 5,
   },
-  placeholderText: {
-    color: '#999',
-    lineHeight: 50,
-    textAlignVertical: 'center',
-  },
-  picker: {
-    height: 50,
-    width: '100%',
-  },
-  toggleButton: {
-    padding: 19,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    marginVertical: 5,
-    alignItems: 'center',
-    backgroundColor: '#f9f9f9',
-  },
-  toggleText: {
+  infoText: {
     fontSize: 16,
+    color: '#333',
+    marginBottom: 10,
   },
-  photoContainer: {
-    flex: 1,
-    justifyContent: 'center',
+  item: {
+    padding: 16,
+    backgroundColor: '#fff',
+    borderColor: '#bbb',
+    borderWidth: 1,
+    borderRadius: 10,
+    marginTop: 16,
+  },
+  imageContainer: {
     alignItems: 'center',
-    position: 'relative',
   },
-  uploadButton: {
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
-    width: 60,
-    height: 60,
-    top:500,
-    backgroundColor: '#007BFF',
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
-  },
-  photo: {
+  image: {
     width: 200,
     height: 200,
     borderRadius: 10,
     marginBottom: 20,
+  },
+  imageButton: {
+    backgroundColor: '#6200ee',
+    padding: 10,
+    borderRadius: 10,
+  },
+  imageButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  saveButton: {
+    backgroundColor: '#6200ee',
+    padding: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  saveButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  editButton: {
+    backgroundColor: '#6200ee',
+    padding: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  editButtonText: {
+    color: '#fff',
+    fontSize: 16,
   },
 });

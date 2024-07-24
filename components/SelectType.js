@@ -1,10 +1,25 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, Modal } from 'react-native';
 
-const SelectType = ({ isVisible, onClose, onSelect, options }) => {
+const SelectType = ({ isVisible, onClose, onSelect }) => {
+  // Define the options array here
+  const options = [
+    { value: 'Τακτική συντήρηση', label: 'Τακτική συντήρηση' },
+    { value: 'Μικρό Σέρβις', label: 'Μικρό Σερβις' },
+    { value: 'Μεγάλο Σέρβις', label: 'Μεγάλο Σέρβις' },
+    { value: 'Πλήρες Σέρβις', label: 'Πλήρες Σέρβις' },
+    { value: 'Βλάβη', label: 'Βλάβη' },
+    { value: 'ΚΤΕΟ', label: 'ΚΤΕΟ' },
+    { value: 'Φανοποιία', label: 'Φανοποιία' },
+    { value: 'Βελτίωση', label: 'Βελτίωση' },
+    { value: 'Προσωπική εργασία', label: 'Προσωπική εργασία' },
+    { value: 'Ηχοσύστημα', label: 'Ηχοσύστημα' },
+    { value: 'Αλλο', label: 'Αλλο' },
+  ];
+
   return (
     <Modal
-      visible={isVisible}  // Εξασφαλίστε ότι το isVisible είναι boolean
+      visible={isVisible}
       transparent
       animationType="slide"
       onRequestClose={onClose}
@@ -21,7 +36,7 @@ const SelectType = ({ isVisible, onClose, onSelect, options }) => {
                 <Text style={styles.modalItemText}>{item.label}</Text>
               </TouchableOpacity>
             )}
-            keyExtractor={(item) => item.value.toString()}  // Βεβαιωθείτε ότι το keyExtractor επιστρέφει string
+            keyExtractor={(item, index) => (item.value ? item.value.toString() : index.toString())}  // Ensure unique key
           />
           <TouchableOpacity
             style={styles.modalCloseButton}
