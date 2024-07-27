@@ -20,7 +20,7 @@ import ImagesTab from './ImagesTab'; // Import the new ImagesTab component
 
 export default function HistoryService({ todos, pressHandler }) {
   const [activeTab, setActiveTab] = useState('BasicInfo');
-  const [selectedItems, setSelectedItems] = useState({});
+  const [] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [basicInfo, setBasicInfo] = useState({
     title: '',
@@ -31,12 +31,8 @@ export default function HistoryService({ todos, pressHandler }) {
     notes: '',
   });
   const [isDateSelected, setIsDateSelected] = useState(false);
-  const [maintenanceData, setMaintenanceData] = useState([
-    'Τακτική Συντήρηση', // Εδώ είναι η νέα επιλογή
-    'Option 2',
-    'Option 3',
-    'Option 4',
-    'Option 5',
+  const [maintenanceData] = useState([
+    
   ]);
   const [photo, setPhoto] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -57,12 +53,6 @@ export default function HistoryService({ todos, pressHandler }) {
     }).start();
   };
 
-  const toggleItem = (key) => {
-    setSelectedItems((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
-  };
 
   const openImagePicker = () => {
     const options = {
@@ -81,7 +71,7 @@ export default function HistoryService({ todos, pressHandler }) {
     });
   };
 
-  const onDateChange = (event, selectedDate) => {
+  const onDateChange = (_event, selectedDate) => {
     const currentDate = selectedDate || basicInfo.date;
     setShowDatePicker(Platform.OS === 'ios');
     setBasicInfo({ ...basicInfo, date: currentDate });
@@ -411,7 +401,7 @@ export default function HistoryService({ todos, pressHandler }) {
             )}
           </>
         );
-      case 'History':
+      case 'maintenance':
         return (
           <FlatList
             data={todos}

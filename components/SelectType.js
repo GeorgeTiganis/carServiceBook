@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, Modal } from 'react-native';
 
 const SelectType = ({ isVisible, onClose, onSelect }) => {
-  // Define the options array here
   const options = [
     { value: 'Τακτική συντήρηση', label: 'Τακτική συντήρηση' },
     { value: 'Μικρό Σέρβις', label: 'Μικρό Σερβις' },
@@ -36,11 +35,11 @@ const SelectType = ({ isVisible, onClose, onSelect }) => {
                 <Text style={styles.modalItemText}>{item.label}</Text>
               </TouchableOpacity>
             )}
-            keyExtractor={(item, index) => (item.value ? item.value.toString() : index.toString())}  // Ensure unique key
+            keyExtractor={(item) => item.value.toString()}  // Ensure unique key
           />
           <TouchableOpacity
             style={styles.modalCloseButton}
-            onPress={onClose}
+            onPress={onClose} // Κλείσιμο του Modal όταν πατιέται το κουμπί
           >
             <Text style={styles.modalCloseButtonText}>Κλείσιμο</Text>
           </TouchableOpacity>

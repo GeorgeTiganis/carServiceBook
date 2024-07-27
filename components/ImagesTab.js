@@ -1,13 +1,7 @@
-// ImagesTab.js
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
+
 
 export default function ImagesTab() {
   const [photo, setPhoto] = useState(null);
@@ -30,12 +24,8 @@ export default function ImagesTab() {
   };
 
   return (
-    <View style={styles.container}>
-      {photo ? (
-        <Image source={{ uri: photo }} style={styles.image} />
-      ) : (
-        <Text style={styles.noImageText}>No Image Selected</Text>
-      )}
+    <View style={styles.imageContainer}>
+      {photo && <Image source={{ uri: photo }} style={styles.image} />}
       <TouchableOpacity onPress={openImagePicker} style={styles.imageButton}>
         <Text style={styles.imageButtonText}>Add Image</Text>
       </TouchableOpacity>
@@ -44,9 +34,9 @@ export default function ImagesTab() {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  imageContainer: {
     alignItems: 'center',
-    padding: 20,
+    marginVertical: 20,
   },
   image: {
     width: 200,
@@ -62,10 +52,5 @@ const styles = StyleSheet.create({
   imageButtonText: {
     color: '#fff',
     fontSize: 16,
-  },
-  noImageText: {
-    fontSize: 16,
-    color: '#333',
-    marginBottom: 20,
   },
 });
