@@ -1,50 +1,37 @@
-import React from 'react';
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+// components/TrashScreen.js
+import React, { useRef, useState } from 'react';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { Audio } from 'expo-av'; // Import Audio from expo-av
+import LottieView from 'lottie-react-native'; // Ensure lottie-react-native is installed
 import Header from './header';
 import defaultImage from '../assets/default.png';
+import restoreAnimation from '../assets/lottie/restore.json'; // Ensure the path is correct
 
-export default function AllVehicles({ todos, pressHandler }) {
-  // Function to play the delete sound
-  const playDeleteSound = async () => {
-    try {
-      const { sound } = await Audio.Sound.createAsync(require('../assets/sound/delete.mp3'));
-      await sound.playAsync();
-      // Optionally, set the sound to unload after playing
-      sound.setOnPlaybackStatusUpdate(status => {
-        if (status.didJustFinish) {
-          sound.unloadAsync();
-        }
-      });
-    } catch (error) {
-      console.log('Error playing sound:', error);
+export default function TrashScreen({ trash, permanentDeleteHandler, restoreHandler }) {
+  const animationRef = useRef(null);
+  const [isAnimationVisible, setIsAnimationVisible] = useState(false);
+
+  const handleRestore = (key) => {
+    setIsAnimationVisible(true);
+    if (animationRef.current) {
+      animationRef.current.play();
     }
-  };
-
-  const confirmDelete = (key) => {
-    Alert.alert(
-      'Confirm Delete',
-      'Are you sure you want to delete this item?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'OK', 
-          onPress: async () => {
-            await playDeleteSound();
-            pressHandler(key);
-          } 
-        },
-      ],
-      { cancelable: false }
-    );
+    restoreHandler(key);
+    setTimeout(() => {
+      setIsAnimationVisible(false);
+    }, 1000); // Adjust time as per the animation duration
   };
 
   const renderRightActions = (item) => (
-    <TouchableOpacity onPress={() => confirmDelete(item.key)} style={styles.deleteIconContainer}>
-      <Icon name="delete" size={24} color="#fff" />
-    </TouchableOpacity>
+    <View style={styles.actionsContainer}>
+      <TouchableOpacity onPress={() => handleRestore(item.key)} style={styles.restoreIconContainer}>
+        <Icon name="restore" size={24} color="#fff" />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => permanentDeleteHandler(item.key)} style={styles.deleteIconContainer}>
+        <Icon name="delete" size={24} color="#fff" />
+      </TouchableOpacity>
+    </View>
   );
 
   return (
@@ -52,7 +39,7 @@ export default function AllVehicles({ todos, pressHandler }) {
       <Header />
       <View style={styles.content}>
         <FlatList
-          data={todos}
+          data={trash}
           renderItem={({ item }) => (
             <Swipeable renderRightActions={() => renderRightActions(item)}>
               <View style={styles.card}>
@@ -72,6 +59,16 @@ export default function AllVehicles({ todos, pressHandler }) {
           keyExtractor={(item) => item.key.toString()}
           contentContainerStyle={styles.listContainer}
         />
+        {isAnimationVisible && (
+          <LottieView
+            ref={animationRef}
+            source={restoreAnimation}
+            autoPlay={false}
+            loop={false}
+            style={styles.lottie}
+            onAnimationFinish={() => setIsAnimationVisible(false)}
+          />
+        )}
       </View>
     </View>
   );
@@ -123,6 +120,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#999',
   },
+  actionsContainer: {
+    flexDirection: 'row',
+  },
+  restoreIconContainer: {
+    backgroundColor: 'green',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 60,
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
+  },
   deleteIconContainer: {
     backgroundColor: 'red',
     justifyContent: 'center',
@@ -130,5 +138,12 @@ const styles = StyleSheet.create({
     width: 60,
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
+  },
+  lottie: {
+    width: 80,
+    height: 80,
+    alignSelf: 'center',
+    position: 'absolute',
+    bottom: 60,
   },
 });

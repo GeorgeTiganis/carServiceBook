@@ -9,13 +9,9 @@ import * as Font from 'expo-font';
 import 'react-native-gesture-handler';
 import CustomDrawerContent from './components/CustomDrawerContent';
 import AllVehicles from './components/AllVehicles';  
-import NextService from './components/NextService';  // Προσθήκη της εισαγωγής για το νέο component
+import NextService from './components/NextService';
 import HistoryService from './components/HistoryService';
-
-
-
-
-
+import TrashScreen from './components/TrashScreen';  // Εισαγωγή του TrashScreen
 
 const Drawer = createDrawerNavigator();
 
@@ -124,25 +120,6 @@ function HomeScreen({ submitHandler, todos, pressHandler }) {
         </View>
       </View>
     </TouchableWithoutFeedback>
-  );
-}
-
-function TrashScreen({ trash, permanentDeleteHandler, restoreHandler }) {
-  return (
-    <View style={styles.container}>
-      <Header />
-      <View style={styles.content}>
-        <Text>Trashed Items</Text>
-        <View style={styles.lists}>
-          <FlatList
-            data={trash}
-            renderItem={({ item }) => (
-              <TodoItem item={item} pressHandler={permanentDeleteHandler} restoreHandler={restoreHandler} isTrash />
-            )}
-          />
-        </View>
-      </View>
-    </View>
   );
 }
 
