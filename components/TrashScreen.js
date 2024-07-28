@@ -1,3 +1,5 @@
+// components/TrashScreen.js
+
 import React, { useRef, useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -13,11 +15,10 @@ export default function TrashScreen({ trash, permanentDeleteHandler, restoreHand
   const [isAnimationVisible, setIsAnimationVisible] = useState(false);
 
   // Function to play the delete sound
-  const playDeleteSound = async () => {
+  async function playDeleteSound() {
     try {
       const { sound } = await Audio.Sound.createAsync(require('../assets/sound/delete.mp3'));
       await sound.playAsync();
-      // Optionally, set the sound to unload after playing
       sound.setOnPlaybackStatusUpdate(status => {
         if (status.didJustFinish) {
           sound.unloadAsync();
@@ -26,6 +27,22 @@ export default function TrashScreen({ trash, permanentDeleteHandler, restoreHand
     } catch (error) {
       console.log('Error playing sound:', error);
     }
+  }
+
+  // Function to handle restoration of a todo item
+  const confirmRestore = (key) => {
+    Alert.alert(
+      'Restore Item',
+      'Are you sure you want to restore this todo?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'OK', 
+          onPress: () => handleRestore(key) 
+        }
+      ],
+      { cancelable: false }
+    );
   };
 
   const handleRestore = (key) => {
@@ -36,7 +53,7 @@ export default function TrashScreen({ trash, permanentDeleteHandler, restoreHand
     restoreHandler(key);
     setTimeout(() => {
       setIsAnimationVisible(false);
-    }, 2000); // Εμφάνιση του animation για 2 δευτερόλεπτα
+    }, 2000); // Show the animation for 2 seconds
   };
 
   // Confirm before deleting an item
@@ -60,7 +77,7 @@ export default function TrashScreen({ trash, permanentDeleteHandler, restoreHand
 
   const renderRightActions = (item) => (
     <View style={styles.actionsContainer}>
-      <TouchableOpacity onPress={() => handleRestore(item.key)} style={styles.restoreIconContainer}>
+      <TouchableOpacity onPress={() => confirmRestore(item.key)} style={styles.restoreIconContainer}>
         <Icon name="restore" size={24} color="#fff" />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => confirmDelete(item.key)} style={styles.deleteIconContainer}>
@@ -94,7 +111,7 @@ export default function TrashScreen({ trash, permanentDeleteHandler, restoreHand
           keyExtractor={(item) => item.key.toString()}
           contentContainerStyle={styles.listContainer}
         />
-       
+        
       </View>
       {isAnimationVisible && (
           <LottieView
@@ -108,6 +125,9 @@ export default function TrashScreen({ trash, permanentDeleteHandler, restoreHand
     </View>
   );
 }
+
+
+
 
 const styles = StyleSheet.create({
   container: {

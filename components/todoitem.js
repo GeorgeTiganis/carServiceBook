@@ -1,15 +1,12 @@
 // components/TodoItem.js
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
-import LottieView from 'lottie-react-native';
 
-export default function TodoItem({ item, pressHandler, restoreHandler, isTrash = false }) {
+export default function TodoItem({ item, pressHandler, isTrash = false }) {
   const [isDeleting, setIsDeleting] = useState(false);
-  const [showTick, setShowTick] = useState(false);
-  const animation = useRef(null);
 
   const confirmDelete = (key) => {
     setIsDeleting(true);
@@ -63,26 +60,6 @@ export default function TodoItem({ item, pressHandler, restoreHandler, isTrash =
     );
   };
 
-  const confirmRestore = (key) => {
-    Alert.alert(
-      'Restore Item',
-      'Are you sure you want to restore this todo?',
-      [
-        { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-        { text: 'OK', onPress: () => {
-            setShowTick(true);
-            animation.current.play();
-            setTimeout(() => {
-              restoreHandler(key);
-              setShowTick(false);
-            }, 1500);
-          }
-        }
-      ],
-      { cancelable: false }
-    );
-  };
-
   const playDeleteSound = async () => {
     try {
       const soundObject = new Audio.Sound();
@@ -95,20 +72,9 @@ export default function TodoItem({ item, pressHandler, restoreHandler, isTrash =
 
   return (
     <View style={styles.item}>
-      {showTick && (
-        <View style={styles.overlay}>
-          <LottieView
-            ref={animation}
-            style={styles.animation}
-            source={require('../assets/lottie/restore.json')}
-            autoPlay={false}
-            loop={false}
-          />
-        </View>
-      )}
       <View style={[styles.itemContent, isDeleting && { backgroundColor: 'red' }]}>
         {isTrash && (
-          <TouchableOpacity onPress={() => confirmRestore(item.key)}>
+          <TouchableOpacity onPress={() => confirmPermanentDelete(item.key)}>
             <MaterialIcons name='restore' size={25} color='#00cc00' />
           </TouchableOpacity>
         )}
@@ -123,6 +89,9 @@ export default function TodoItem({ item, pressHandler, restoreHandler, isTrash =
     </View>
   );
 }
+
+
+
 
 const styles = StyleSheet.create({
   item: {
