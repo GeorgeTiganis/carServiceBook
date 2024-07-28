@@ -1,16 +1,32 @@
-// components/TrashScreen.js
 import React, { useRef, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import LottieView from 'lottie-react-native'; // Ensure lottie-react-native is installed
+import LottieView from 'lottie-react-native';
+import { Audio } from 'expo-av'; // Import Audio from expo-av
 import Header from './header';
 import defaultImage from '../assets/default.png';
-import restoreAnimation from '../assets/lottie/restore.json'; // Ensure the path is correct
+import restoreAnimation from '../assets/lottie/restore.json';
 
 export default function TrashScreen({ trash, permanentDeleteHandler, restoreHandler }) {
   const animationRef = useRef(null);
   const [isAnimationVisible, setIsAnimationVisible] = useState(false);
+
+  // Function to play the delete sound
+  const playDeleteSound = async () => {
+    try {
+      const { sound } = await Audio.Sound.createAsync(require('../assets/sound/delete.mp3'));
+      await sound.playAsync();
+      // Optionally, set the sound to unload after playing
+      sound.setOnPlaybackStatusUpdate(status => {
+        if (status.didJustFinish) {
+          sound.unloadAsync();
+        }
+      });
+    } catch (error) {
+      console.log('Error playing sound:', error);
+    }
+  };
 
   const handleRestore = (key) => {
     setIsAnimationVisible(true);
@@ -20,7 +36,26 @@ export default function TrashScreen({ trash, permanentDeleteHandler, restoreHand
     restoreHandler(key);
     setTimeout(() => {
       setIsAnimationVisible(false);
-    }, 1000); // Adjust time as per the animation duration
+    }, 2000); // Εμφάνιση του animation για 2 δευτερόλεπτα
+  };
+
+  // Confirm before deleting an item
+  const confirmDelete = (key) => {
+    Alert.alert(
+      'Confirm Delete',
+      'Are you sure you want to delete this item?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'OK', 
+          onPress: async () => {
+            await playDeleteSound();
+            permanentDeleteHandler(key);
+          } 
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   const renderRightActions = (item) => (
@@ -28,7 +63,7 @@ export default function TrashScreen({ trash, permanentDeleteHandler, restoreHand
       <TouchableOpacity onPress={() => handleRestore(item.key)} style={styles.restoreIconContainer}>
         <Icon name="restore" size={24} color="#fff" />
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => permanentDeleteHandler(item.key)} style={styles.deleteIconContainer}>
+      <TouchableOpacity onPress={() => confirmDelete(item.key)} style={styles.deleteIconContainer}>
         <Icon name="delete" size={24} color="#fff" />
       </TouchableOpacity>
     </View>
@@ -59,17 +94,17 @@ export default function TrashScreen({ trash, permanentDeleteHandler, restoreHand
           keyExtractor={(item) => item.key.toString()}
           contentContainerStyle={styles.listContainer}
         />
-        {isAnimationVisible && (
+       
+      </View>
+      {isAnimationVisible && (
           <LottieView
             ref={animationRef}
             source={restoreAnimation}
-            autoPlay={false}
+            autoPlay
             loop={false}
             style={styles.lottie}
-            onAnimationFinish={() => setIsAnimationVisible(false)}
           />
         )}
-      </View>
     </View>
   );
 }
@@ -140,10 +175,11 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 10,
   },
   lottie: {
-    width: 80,
-    height: 80,
+    width: 100,
+    height: 100,
     alignSelf: 'center',
     position: 'absolute',
     bottom: 60,
+    backgroundColor: 'rgba(255, 255, 255, 0)', // Διαφανές background για καλύτερη ορατότητα
   },
 });
