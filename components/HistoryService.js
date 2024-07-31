@@ -17,10 +17,10 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import SelectType from './SelectType';
 import ImagesTab from './ImagesTab'; // Import the new ImagesTab component
+import Maintenance from './Maintenance.js';
 
 export default function HistoryService({ todos, pressHandler }) {
   const [activeTab, setActiveTab] = useState('BasicInfo');
-  const [] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [basicInfo, setBasicInfo] = useState({
     title: '',
@@ -29,11 +29,10 @@ export default function HistoryService({ todos, pressHandler }) {
     mileage: '',
     cost: '',
     notes: '',
+    vehicle: '', // New field for vehicle selection
   });
   const [isDateSelected, setIsDateSelected] = useState(false);
-  const [maintenanceData] = useState([
-    
-  ]);
+  const [maintenanceData] = useState([]);
   const [photo, setPhoto] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -44,6 +43,7 @@ export default function HistoryService({ todos, pressHandler }) {
   const mileageLabelAnim = useRef(new Animated.Value(0)).current;
   const costLabelAnim = useRef(new Animated.Value(0)).current;
   const notesLabelAnim = useRef(new Animated.Value(0)).current;
+  const vehicleLabelAnim = useRef(new Animated.Value(0)).current; // Animation for vehicle label
 
   const animateLabel = (animation, toValue) => {
     Animated.timing(animation, {
@@ -52,7 +52,6 @@ export default function HistoryService({ todos, pressHandler }) {
       useNativeDriver: false,
     }).start();
   };
-
 
   const openImagePicker = () => {
     const options = {
@@ -108,7 +107,7 @@ export default function HistoryService({ todos, pressHandler }) {
                       {
                         top: titleLabelAnim.interpolate({
                           inputRange: [0, 1],
-                          outputRange: [20, -10],
+                          outputRange: [25, -5],
                         }),
                         fontSize: titleLabelAnim.interpolate({
                           inputRange: [0, 1],
@@ -219,7 +218,7 @@ export default function HistoryService({ todos, pressHandler }) {
                     onPress={() => setIsModalVisible(true)}
                   >
                     <Text >
-                      {basicInfo.serviceType }
+                      {basicInfo.serviceType}
                     </Text>
                   </TouchableOpacity>
                   <Animated.View
@@ -337,6 +336,52 @@ export default function HistoryService({ todos, pressHandler }) {
                     style={[
                       styles.label,
                       {
+                        top: vehicleLabelAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [20, -10],
+                        }),
+                        fontSize: vehicleLabelAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [16, 12],
+                        }),
+                        color: '#333', // Ensure the label is visible
+                      },
+                    ]}
+                  >
+                    Επιλέξτε Όχημα
+                  </Animated.Text>
+                  <TextInput
+                    style={styles.input}
+                    value={basicInfo.vehicle}
+                    onFocus={() => animateLabel(vehicleLabelAnim, 1)}
+                    onBlur={() => {
+                      if (!basicInfo.vehicle) {
+                        animateLabel(vehicleLabelAnim, 0);
+                      }
+                    }}
+                    onChangeText={(text) => setBasicInfo({ ...basicInfo, vehicle: text })}
+                  />
+                  <Animated.View
+                    style={[
+                      styles.underline,
+                      {
+                        transform: [
+                          {
+                            scaleX: vehicleLabelAnim.interpolate({
+                              inputRange: [0, 1],
+                              outputRange: [0, 1],
+                            }),
+                          },
+                        ],
+                      },
+                    ]}
+                  />
+                </View>
+                <View style={styles.inputContainer}>
+                  <Animated.Text
+                    style={[
+                      styles.label,
+                      {
                         top: notesLabelAnim.interpolate({
                           inputRange: [0, 1],
                           outputRange: [20, -10],
@@ -380,6 +425,7 @@ export default function HistoryService({ todos, pressHandler }) {
                     ]}
                   />
                 </View>
+                
                 <TouchableOpacity style={styles.saveButton} onPress={handleSavePress}>
                   <Text style={styles.saveButtonText}>Αποθήκευση</Text>
                 </TouchableOpacity>
@@ -393,6 +439,7 @@ export default function HistoryService({ todos, pressHandler }) {
                 <Text style={styles.infoText}>Τύπος Service: {basicInfo.serviceType}</Text>
                 <Text style={styles.infoText}>Διανυθέντα Χιλιόμετρα: {basicInfo.mileage}</Text>
                 <Text style={styles.infoText}>Κόστος: {basicInfo.cost}</Text>
+                <Text style={styles.infoText}>Όχημα: {basicInfo.vehicle}</Text>
                 <Text style={styles.infoText}>Σημειώσεις: {basicInfo.notes}</Text>
                 <TouchableOpacity style={styles.editButton} onPress={handleEditPress}>
                   <Text style={styles.editButtonText}>Επεξεργασία</Text>
@@ -403,14 +450,18 @@ export default function HistoryService({ todos, pressHandler }) {
         );
       case 'maintenance':
         return (
-          <FlatList
-            data={todos}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => pressHandler(item.key)}>
-                <Text style={styles.item}>{item.text}</Text>
-              </TouchableOpacity>
-            )}
-          />
+          <View style={styles.maintenanceContainer}>
+            <Maintenance />
+            <FlatList
+              data={todos}
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => pressHandler(item.key)}>
+                  <Text style={styles.item}>{item.text}</Text>
+                </TouchableOpacity>
+              )}
+              keyExtractor={item => item.key}
+            />
+          </View>
         );
       case 'Images':
         return (
@@ -505,16 +556,10 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    padding: 20,
+    padding: 20, // Adjust padding as needed
   },
   inputContainer: {
     marginBottom: 35,
-  },
-  label: {
-    position: 'absolute',
-    left: 10,
-    top: 20,
-    color: '#777',
   },
   input: {
     borderBottomWidth: 1,
@@ -538,6 +583,10 @@ const styles = StyleSheet.create({
     height: 2,
     backgroundColor: '#6200ee',
     marginTop: 5,
+  },
+  label: {
+    fontSize: 16,
+    color: '#333',
   },
   infoText: {
     fontSize: 16,
@@ -591,5 +640,8 @@ const styles = StyleSheet.create({
   editButtonText: {
     color: '#fff',
     fontSize: 16,
+  },
+  maintenanceContainer: {
+    flex: 1,
   },
 });
