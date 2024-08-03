@@ -1,4 +1,3 @@
-// components/NextService.js
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Button, TextInput, Alert, ScrollView, Modal, TouchableOpacity } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -12,6 +11,7 @@ const NextService = () => {
   const [licensePlate, setLicensePlate] = useState('');
   const [serviceNotes, setServiceNotes] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [editNoteId, setEditNoteId] = useState(null);
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -32,22 +32,46 @@ const NextService = () => {
         carName: carName,
         licensePlate: licensePlate
       };
-      setServiceNotes((prevNotes) => [newNote, ...prevNotes]);
+      if (editNoteId) {
+        setServiceNotes((prevNotes) =>
+          prevNotes.map((note) =>
+            note.id === editNoteId
+              ? { ...note, date: date.toDateString(), details, carName, licensePlate }
+              : note
+          )
+        );
+        setEditNoteId(null);
+      } else {
+        setServiceNotes((prevNotes) => [newNote, ...prevNotes]);
+      }
       setDetails('');
       setCarName('');
       setLicensePlate('');
       setModalVisible(false);
-      Alert.alert('Success', `Next service scheduled on ${date.toDateString()} with details: ${details}`);
+      Alert.alert('Επιτυχής', `Το επόμενομ service είναι ${date.toDateString()} λεπτομέρειε;: ${details}`);
     } else {
-      Alert.alert('Error', 'Please fill out all fields');
+      Alert.alert('Πρόβλημα', 'Παρακαλώ συμπληρώστε όλα τα πεδία');
     }
+  };
+
+  const handleEdit = (id) => {
+    const noteToEdit = serviceNotes.find(note => note.id === id);
+    if (noteToEdit) {
+      setDate(new Date(noteToEdit.date));
+      setDetails(noteToEdit.details);
+      setCarName(noteToEdit.carName);
+      setLicensePlate(noteToEdit.licensePlate);
+      setEditNoteId(id);
+      setModalVisible(true);
+    }
+  };
+
+  const handleDelete = (id) => {
+    setServiceNotes((prevNotes) => prevNotes.filter(note => note.id !== id));
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.iconButton}>
-        <Ionicons name="calendar-outline" size={40} color="black" />
-      </TouchableOpacity>
       <Modal
         animationType="slide"
         transparent={true}
@@ -55,10 +79,10 @@ const NextService = () => {
         onRequestClose={() => {
           setModalVisible(!modalVisible);
         }}>
-        <View style={styles.centeredView}>
+        <View style={styles.modalBackground}>
           <View style={styles.modalView}>
-            <Text style={styles.label}>Schedule Next Service</Text>
-            <Button onPress={showDatePicker} title="Pick Date" />
+            <Text style={styles.label}>Επόμενο Service</Text>
+            <Button onPress={showDatePicker} title="Ημερομηνια" color="#007BFF" />
             {show && (
               <DateTimePicker
                 testID="dateTimePicker"
@@ -71,24 +95,28 @@ const NextService = () => {
             <Text style={styles.dateText}>{date.toDateString()}</Text>
             <TextInput
               style={styles.input}
-              placeholder="Enter car name"
+              placeholder="Ονομα αυτοκινήτου"
               onChangeText={setCarName}
               value={carName}
             />
             <TextInput
               style={styles.input}
-              placeholder="Enter license plate"
+              placeholder="Αριθμός πινακίδας"
               onChangeText={setLicensePlate}
               value={licensePlate}
             />
             <TextInput
               style={styles.input}
-              placeholder="Enter service details"
+              placeholder="Λεπτομέρειες service"
               onChangeText={setDetails}
               value={details}
             />
-            <Button title="Save" onPress={handleSave} />
-            <Button title="Cancel" onPress={() => setModalVisible(false)} color="red" />
+            <View style={styles.buttonContainer}>
+              <Button title={editNoteId ? "Αποθήκευση" : "Αποθήκευση"} onPress={handleSave} color="#28a745" />
+              <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.cancelButton}>
+                <Text style={styles.cancelButtonText}>Ακύρωση</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -99,9 +127,20 @@ const NextService = () => {
             <Text style={styles.noteText}>Car Name: {note.carName}</Text>
             <Text style={styles.noteText}>License Plate: {note.licensePlate}</Text>
             <Text style={styles.noteText}>Details: {note.details}</Text>
+            <View style={styles.noteActions}>
+              <TouchableOpacity onPress={() => handleEdit(note.id)} style={styles.editButton}>
+                <Ionicons name="pencil" size={24} color="#007BFF" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleDelete(note.id)} style={styles.deleteButton}>
+                <Ionicons name="trash" size={24} color="#dc3545" />
+              </TouchableOpacity>
+            </View>
           </View>
         ))}
       </View>
+      <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.iconButton}>
+        <Ionicons name="add-circle-outline" size={60} color="#007BFF" />
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -112,61 +151,92 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   iconButton: {
-    alignItems: 'center',
-    marginVertical: 20,
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    backgroundColor: 'transparent',
   },
-  centeredView: {
+  modalBackground: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 22,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
-    margin: 20,
+    width: '85%',
     backgroundColor: 'white',
     borderRadius: 20,
-    padding: 35,
+    padding: 20,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 10,
   },
   label: {
-    fontSize: 18,
-    marginBottom: 20,
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
   },
   dateText: {
     fontSize: 18,
-    marginVertical: 20,
+    marginVertical: 15,
+    color: '#333',
   },
   input: {
     borderWidth: 1,
     borderColor: '#ddd',
     padding: 10,
     fontSize: 18,
-    borderRadius: 6,
-    marginBottom: 20,
-    width: 200,
+    borderRadius: 10,
+    marginBottom: 15,
+    width: '100%',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 20,
+  },
+  cancelButton: {
+    backgroundColor: '#dc3545',
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  cancelButtonText: {
+    color: '#fff',
+    fontSize: 16,
   },
   notesContainer: {
     marginTop: 20,
+    paddingHorizontal: 15,
   },
   note: {
     backgroundColor: '#f9f9f9',
-    padding: 20,
-    borderRadius: 6,
+    padding: 15,
+    borderRadius: 10,
     marginVertical: 10,
     borderWidth: 1,
     borderColor: '#ddd',
   },
   noteText: {
     fontSize: 16,
+    color: '#333',
   },
+  noteActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 10,
+  },
+  editButton: {
+    marginRight: 10,
+  },
+  deleteButton: {},
 });
 
 export default NextService;
