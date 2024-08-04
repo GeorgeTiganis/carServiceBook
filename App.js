@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, FlatList, Alert, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import { MaterialIcons } from '@expo/vector-icons';
 import Header from './components/header';
 import TodoItem from './components/todoitem';
 import AddTodo from './components/addTodo';
@@ -11,7 +12,9 @@ import CustomDrawerContent from './components/CustomDrawerContent';
 import AllVehicles from './components/AllVehicles';  
 import NextService from './components/NextService';
 import HistoryService from './components/HistoryService';
-import TrashScreen from './components/TrashScreen';  // Εισαγωγή του TrashScreen
+import TrashScreen from './components/TrashScreen';
+import Workshop from './components/Workshop';
+import Application from './components/Application'; // Εισαγωγή του Application component
 
 const Drawer = createDrawerNavigator();
 
@@ -58,23 +61,37 @@ export default function App() {
         { text: text, key: Math.random().toString(), category: category },
         ...prevTodos
       ]);
-      navigation.navigate('All vehicles');
+      navigation.navigate('Ολα τα οχήματα');
     } else {
       Alert.alert('Oops!', 'Ξαναπροσπαθήστε, έχετε εισάγει λανθασμένους χαρακτήρες', [
-        { text: 'Understood', onPress: () => console.log('alert closed') }
+        { text: 'Κατανοητό', onPress: () => console.log('alert closed') }
       ]);
     }
   };
 
   return (
     <NavigationContainer>
-      <Drawer.Navigator initialRouteName="Home" drawerContent={(props) => <CustomDrawerContent {...props} />}>
-        <Drawer.Screen name="Home">
+      <Drawer.Navigator initialRouteName="Αρχική" drawerContent={(props) => <CustomDrawerContent {...props} />}>
+        <Drawer.Screen
+          name="Αρχική"
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <MaterialIcons name="home" size={size} color={color} />
+            ),
+          }}
+        >
           {() => (
             <HomeScreen submitHandler={submitHandler} todos={todos} pressHandler={pressHandler} />
           )}
         </Drawer.Screen>
-        <Drawer.Screen name="Trash">
+        <Drawer.Screen
+          name="Σκουπίδια"
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <MaterialIcons name="delete" size={size} color={color} />
+            ),
+          }}
+        >
           {() => (
             <TrashScreen 
               trash={trash}
@@ -83,15 +100,54 @@ export default function App() {
             />
           )}
         </Drawer.Screen>
-        <Drawer.Screen name="About" component={AboutScreen} />
-        <Drawer.Screen name="All vehicles">
+        <Drawer.Screen
+          name="Η εφαρμογή"
+          component={Application}
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <MaterialIcons name="apps" size={size} color={color} />
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="Ολα τα οχήματα"
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <MaterialIcons name="directions-car" size={size} color={color} />
+            ),
+          }}
+        >
           {() => (
             <AllVehicles todos={todos} pressHandler={pressHandler} />
           )}
         </Drawer.Screen>
-        <Drawer.Screen name="History" component={History} />
-        <Drawer.Screen name="NextService" component={NextService} />
-        <Drawer.Screen name="HistoryService" component={HistoryService} />
+        <Drawer.Screen
+          name="Συνεργείο"
+          component={Workshop}
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <MaterialIcons name="build" size={size} color={color} />
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="Επόμενο Service"
+          component={NextService}
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <MaterialIcons name="next-week" size={size} color={color} />
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="Ιστορικό Service"
+          component={HistoryService}
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <MaterialIcons name="history" size={size} color={color} />
+            ),
+          }}
+        />
       </Drawer.Navigator>
     </NavigationContainer>
   );
@@ -120,28 +176,6 @@ function HomeScreen({ submitHandler, todos, pressHandler }) {
         </View>
       </View>
     </TouchableWithoutFeedback>
-  );
-}
-
-function AboutScreen() {
-  return (
-    <View style={styles.container}>
-      <Header />
-      <View style={styles.content}>
-        <Text>About Screen</Text>
-      </View>
-    </View>
-  );
-}
-
-function History() {
-  return (
-    <View style={styles.container}>
-      <Header />
-      <View style={styles.content}>
-        <Text>History</Text>
-      </View>
-    </View>
   );
 }
 

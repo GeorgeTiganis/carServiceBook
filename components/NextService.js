@@ -5,7 +5,9 @@ import { Ionicons } from '@expo/vector-icons';
 
 const NextService = () => {
   const [date, setDate] = useState(new Date());
-  const [show, setShow] = useState(false);
+  const [time, setTime] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
   const [details, setDetails] = useState('');
   const [carName, setCarName] = useState('');
   const [licensePlate, setLicensePlate] = useState('');
@@ -13,21 +15,24 @@ const NextService = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [editNoteId, setEditNoteId] = useState(null);
 
-  const onChange = (event, selectedDate) => {
+  const onChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate || date;
-    setShow(false);
+    setShowDatePicker(false);
     setDate(currentDate);
   };
 
-  const showDatePicker = () => {
-    setShow(true);
+  const onChangeTime = (event, selectedTime) => {
+    const currentTime = selectedTime || time;
+    setShowTimePicker(false);
+    setTime(currentTime);
   };
 
   const handleSave = () => {
     if (details.length > 0 && carName.length > 0 && licensePlate.length > 0) {
       const newNote = {
         id: Math.random().toString(),
-        date: date.toDateString(),
+        date: date.toISOString(),
+        time: time.toISOString(),
         details: details,
         carName: carName,
         licensePlate: licensePlate
@@ -36,7 +41,7 @@ const NextService = () => {
         setServiceNotes((prevNotes) =>
           prevNotes.map((note) =>
             note.id === editNoteId
-              ? { ...note, date: date.toDateString(), details, carName, licensePlate }
+              ? { ...note, date: date.toISOString(), time: time.toISOString(), details, carName, licensePlate }
               : note
           )
         );
@@ -48,7 +53,7 @@ const NextService = () => {
       setCarName('');
       setLicensePlate('');
       setModalVisible(false);
-      Alert.alert('Επιτυχής', `Το επόμενομ service είναι ${date.toDateString()} λεπτομέρειε;: ${details}`);
+      Alert.alert('Επιτυχής', `Το επόμενο service είναι ${date.toDateString()} στις ${time.toLocaleTimeString()} λεπτομέρειες: ${details}`);
     } else {
       Alert.alert('Πρόβλημα', 'Παρακαλώ συμπληρώστε όλα τα πεδία');
     }
@@ -58,6 +63,7 @@ const NextService = () => {
     const noteToEdit = serviceNotes.find(note => note.id === id);
     if (noteToEdit) {
       setDate(new Date(noteToEdit.date));
+      setTime(new Date(noteToEdit.time));
       setDetails(noteToEdit.details);
       setCarName(noteToEdit.carName);
       setLicensePlate(noteToEdit.licensePlate);
@@ -82,20 +88,31 @@ const NextService = () => {
         <View style={styles.modalBackground}>
           <View style={styles.modalView}>
             <Text style={styles.label}>Επόμενο Service</Text>
-            <Button onPress={showDatePicker} title="Ημερομηνια" color="#007BFF" />
-            {show && (
+            <Button onPress={() => setShowDatePicker(true)} title="Ημερομηνία" color="#007BFF" />
+            {showDatePicker && (
               <DateTimePicker
                 testID="dateTimePicker"
                 value={date}
                 mode="date"
                 display="default"
-                onChange={onChange}
+                onChange={onChangeDate}
               />
             )}
             <Text style={styles.dateText}>{date.toDateString()}</Text>
+            <Button onPress={() => setShowTimePicker(true)} title="Ώρα" color="#007BFF" />
+            {showTimePicker && (
+              <DateTimePicker
+                testID="timePicker"
+                value={time}
+                mode="time"
+                display="default"
+                onChange={onChangeTime}
+              />
+            )}
+            <Text style={styles.dateText}>{time.toLocaleTimeString()}</Text>
             <TextInput
               style={styles.input}
-              placeholder="Ονομα αυτοκινήτου"
+              placeholder="Όνομα αυτοκινήτου"
               onChangeText={setCarName}
               value={carName}
             />
@@ -112,7 +129,7 @@ const NextService = () => {
               value={details}
             />
             <View style={styles.buttonContainer}>
-              <Button title={editNoteId ? "Αποθήκευση" : "Αποθήκευση"} onPress={handleSave} color="#28a745" />
+              <Button title="Αποθήκευση" onPress={handleSave} color="#28a745" />
               <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.cancelButton}>
                 <Text style={styles.cancelButtonText}>Ακύρωση</Text>
               </TouchableOpacity>
@@ -123,10 +140,11 @@ const NextService = () => {
       <View style={styles.notesContainer}>
         {serviceNotes.map(note => (
           <View key={note.id} style={styles.note}>
-            <Text style={styles.noteText}>Date: {note.date}</Text>
-            <Text style={styles.noteText}>Car Name: {note.carName}</Text>
-            <Text style={styles.noteText}>License Plate: {note.licensePlate}</Text>
-            <Text style={styles.noteText}>Details: {note.details}</Text>
+            <Text style={styles.noteText}>Ημερομηνία: {new Date(note.date).toDateString()}</Text>
+            <Text style={styles.noteText}>Ώρα: {new Date(note.time).toLocaleTimeString()}</Text>
+            <Text style={styles.noteText}>Όνομα αυτοκινήτου: {note.carName}</Text>
+            <Text style={styles.noteText}>Αριθμός πινακίδας: {note.licensePlate}</Text>
+            <Text style={styles.noteText}>Λεπτομέρειες: {note.details}</Text>
             <View style={styles.noteActions}>
               <TouchableOpacity onPress={() => handleEdit(note.id)} style={styles.editButton}>
                 <Ionicons name="pencil" size={24} color="#007BFF" />
@@ -139,7 +157,7 @@ const NextService = () => {
         ))}
       </View>
       <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.iconButton}>
-        <Ionicons name="add-circle-outline" size={60} color="#007BFF" />
+        <Ionicons name="add-circle-outline" size={60} color="#fff" />
       </TouchableOpacity>
     </ScrollView>
   );
@@ -154,7 +172,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 30,
     right: 30,
-    backgroundColor: 'transparent',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#007BFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
   },
   modalBackground: {
     flex: 1,
