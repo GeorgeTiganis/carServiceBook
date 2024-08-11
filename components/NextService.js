@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, Button, TextInput, Alert, ScrollView, Modal, TouchableOpacity } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
+import { Swipeable } from 'react-native-gesture-handler';
 
 const NextService = () => {
   const [date, setDate] = useState(new Date());
@@ -76,6 +77,14 @@ const NextService = () => {
     setServiceNotes((prevNotes) => prevNotes.filter(note => note.id !== id));
   };
 
+  const renderRightActions = (id) => {
+    return (
+      <TouchableOpacity onPress={() => handleDelete(id)} style={styles.deleteButton}>
+        <Ionicons name="trash" size={24} color="#fff" />
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Modal
@@ -99,7 +108,7 @@ const NextService = () => {
               />
             )}
             <Text style={styles.dateText}>{date.toDateString()}</Text>
-            <Button onPress={() => setShowTimePicker(true)} title="Ώρα" color="#007BFF" />
+            <Button onPress={() => setShowTimePicker(true)} title="Ώρα service" color="#007BFF" />
             {showTimePicker && (
               <DateTimePicker
                 testID="timePicker"
@@ -139,21 +148,17 @@ const NextService = () => {
       </Modal>
       <View style={styles.notesContainer}>
         {serviceNotes.map(note => (
-          <View key={note.id} style={styles.note}>
-            <Text style={styles.noteText}>Ημερομηνία: {new Date(note.date).toDateString()}</Text>
-            <Text style={styles.noteText}>Ώρα: {new Date(note.time).toLocaleTimeString()}</Text>
-            <Text style={styles.noteText}>Όνομα αυτοκινήτου: {note.carName}</Text>
-            <Text style={styles.noteText}>Αριθμός πινακίδας: {note.licensePlate}</Text>
-            <Text style={styles.noteText}>Λεπτομέρειες: {note.details}</Text>
-            <View style={styles.noteActions}>
-              <TouchableOpacity onPress={() => handleEdit(note.id)} style={styles.editButton}>
-                <Ionicons name="pencil" size={24} color="#007BFF" />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleDelete(note.id)} style={styles.deleteButton}>
-                <Ionicons name="trash" size={24} color="#dc3545" />
-              </TouchableOpacity>
-            </View>
-          </View>
+          <Swipeable key={note.id} renderRightActions={() => renderRightActions(note.id)}>
+            <TouchableOpacity onPress={() => handleEdit(note.id)}>
+              <View style={styles.note}>
+                <Text style={styles.noteText}>Ημερομηνία: {new Date(note.date).toDateString()}</Text>
+                <Text style={styles.noteText}>Ώρα: {new Date(note.time).toLocaleTimeString()}</Text>
+                <Text style={styles.noteText}>Όνομα αυτοκινήτου: {note.carName}</Text>
+                <Text style={styles.noteText}>Αριθμός πινακίδας: {note.licensePlate}</Text>
+                <Text style={styles.noteText}>Λεπτομέρειες: {note.details}</Text>
+              </View>
+            </TouchableOpacity>
+          </Swipeable>
         ))}
       </View>
       <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.iconButton}>
@@ -166,7 +171,8 @@ const NextService = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f8f9fa',
+    padding: 15,
   },
   iconButton: {
     position: 'absolute',
@@ -178,11 +184,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#007BFF',
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 5,
+    elevation: 8,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
   },
   modalBackground: {
     flex: 1,
@@ -191,38 +197,37 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
-    width: '85%',
-    backgroundColor: 'white',
+    width: '90%',
+    backgroundColor: '#fff',
     borderRadius: 20,
-    padding: 20,
+    padding: 25,
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
-    shadowRadius: 10,
+    shadowRadius: 8,
     elevation: 10,
   },
   label: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 15,
+    marginBottom: 20,
+    color: '#007BFF',
   },
   dateText: {
     fontSize: 18,
-    marginVertical: 15,
+    marginVertical: 10,
     color: '#333',
   },
   input: {
     borderWidth: 1,
     borderColor: '#ddd',
-    padding: 10,
+    padding: 12,
     fontSize: 18,
-    borderRadius: 10,
+    borderRadius: 8,
     marginBottom: 15,
     width: '100%',
+    backgroundColor: '#f9f9f9',
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -242,29 +247,39 @@ const styles = StyleSheet.create({
   },
   notesContainer: {
     marginTop: 20,
-    paddingHorizontal: 15,
   },
   note: {
-    backgroundColor: '#f9f9f9',
-    padding: 15,
+    backgroundColor: '#fff',
+    padding: 20,
     borderRadius: 10,
     marginVertical: 10,
     borderWidth: 1,
     borderColor: '#ddd',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
   },
   noteText: {
     fontSize: 16,
     color: '#333',
+    marginBottom: 5,
   },
-  noteActions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: 10,
+  deleteButton: {
+    backgroundColor: '#dc3545',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 2,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    marginTop:67,
   },
-  editButton: {
-    marginRight: 10,
-  },
-  deleteButton: {},
 });
 
 export default NextService;

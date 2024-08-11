@@ -89,12 +89,6 @@ export default function Workshop() {
   const renderRightActions = (index) => (
     <View style={styles.rightActionsContainer}>
       <TouchableOpacity
-        style={styles.editIconContainer}
-        onPress={() => handleEdit(index)}
-      >
-        <Icon name="edit" size={24} color="#fff" />
-      </TouchableOpacity>
-      <TouchableOpacity
         style={styles.deleteIconContainer}
         onPress={() => handleDelete(index)}
       >
@@ -105,7 +99,7 @@ export default function Workshop() {
 
   const renderProfileItem = ({ item, index }) => (
     <Swipeable renderRightActions={() => renderRightActions(index)}>
-      <View style={styles.profileContainer}>
+      <TouchableOpacity style={styles.profileContainer} onPress={() => handleEdit(index)}>
         <View style={styles.iconContainer}>
           <Icon name="gear" size={30} color="#007BFF" />
         </View>
@@ -119,7 +113,7 @@ export default function Workshop() {
         >
           <Icon name="phone" size={30} color="#28a745" />
         </TouchableOpacity>
-      </View>
+      </TouchableOpacity>
     </Swipeable>
   );
 
@@ -234,7 +228,8 @@ const styles = StyleSheet.create({
     padding: 20, // Increased padding for better appearance
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: 10,
+    borderRadius: 30,
+    height: 120, // Set the desired height here
   },
   iconContainer: {
     marginRight: 10,
@@ -260,22 +255,18 @@ const styles = StyleSheet.create({
   rightActionsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ddd',
     justifyContent: 'flex-end',
-  },
-  editIconContainer: {
-    backgroundColor: '#007BFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 60,
-    height: '100%',
+    margin: 0,
+    padding: 0,
+    backgroundColor: 'transparent',
   },
   deleteIconContainer: {
     backgroundColor: '#dc3545',
     justifyContent: 'center',
     alignItems: 'center',
     width: 60,
-    height: '100%',
+    height: 60,
+    borderRadius: 30,
   },
   addButton: {
     position: 'absolute',
