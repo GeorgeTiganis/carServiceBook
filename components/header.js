@@ -34,7 +34,7 @@ export default function Header() {
                 source={images[currentImageIndex]}
                 style={[styles.image, { opacity: fadeAnim }]}
             />
-            <Text style={styles.title}>My car Book</Text>
+            
         </View>
     );
 }
@@ -51,10 +51,5 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
-    title: {
-        textAlign: 'center',
-        color: 'red',
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
+    
 });

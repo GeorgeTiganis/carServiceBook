@@ -467,10 +467,9 @@ export default function HistoryService({ todos, pressHandler }) {
       case 'Images':
         return (
           <View style={styles.imageContainer}>
-            {photo && <Image source={{ uri: photo }} style={styles.image} />}
-            <TouchableOpacity onPress={openImagePicker} style={styles.imageButton}>
-              <Text style={styles.imageButtonText}>Add Image</Text>
-            </TouchableOpacity>
+            <ImagesTab />
+           
+            
           </View>
         );
       default:
