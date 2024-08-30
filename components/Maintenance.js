@@ -84,7 +84,7 @@ const Maintenance = () => {
     { id: '65', title: 'Αλλαγή εμπρός γρύλου παραθύρων', value: false },
     { id: '66', title: 'Επισκευή πίσω γρύλου παραθύρων', value: false },
     { id: '67', title: 'Αλλαγή λάστιχα στήριξης εξάτμισης', value: false },
-    { id: '68', title: 'Επιπλέον Εργασίες', isHeader: true },
+   
 
 
 

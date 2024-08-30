@@ -47,7 +47,7 @@ export default function AddTodo({ submitHandler }) {
       <Animated.View style={[styles.inputContainer, { borderColor }]}>
         <TextInput
           style={styles.input}
-          placeholder='ΠΑΡ1234'
+          placeholder='ΧΖΕ - 2439'
           onChangeText={changeHandler}
           value={text}
           onFocus={handleFocus}
@@ -58,7 +58,7 @@ export default function AddTodo({ submitHandler }) {
         selectedCategory={category}
         onCategoryChange={setCategory}
       />
-      <Button onPress={handleAddTodo} title='add todo' color='coral' />
+      <Button onPress={handleAddTodo} title='Προσθηκη νεου' color='blue' />
     </View>
   )
 }
@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 50,
+    top:10,
     paddingHorizontal: 8,
     paddingVertical: 6,
     marginBottom:20,
