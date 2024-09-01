@@ -128,7 +128,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: 60,
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
+    height:60,
+    borderRadius: 30,
+    top:20,
+    marginRight:5,
   },
 });
