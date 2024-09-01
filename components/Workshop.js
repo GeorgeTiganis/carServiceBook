@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, TextInput, Modal, TouchableOpacity, ScrollView,
 import Icon from 'react-native-vector-icons/FontAwesome'; // For the gear and plus icons
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Header from './header'; // Include your Header component if needed
+import image4 from '../assets/image4.jpeg';
+import { Rating } from 'react-native-ratings'; // Import Rating component
 
 export default function Workshop() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -12,7 +14,8 @@ export default function Workshop() {
     address: '',
     phone: '',
     mobile: '',
-    email: ''
+    email: '',
+    rating: 0 // Add rating property
   });
   const [profiles, setProfiles] = useState([]);
   const [editMode, setEditMode] = useState(false);
@@ -42,7 +45,8 @@ export default function Workshop() {
       address: '',
       phone: '',
       mobile: '',
-      email: ''
+      email: '',
+      rating: 0 // Reset rating
     });
   };
 
@@ -53,7 +57,8 @@ export default function Workshop() {
       address: profiles[index].address,
       phone: profiles[index].phone || '',
       mobile: profiles[index].mobile || '',
-      email: profiles[index].email || ''
+      email: profiles[index].email || '',
+      rating: profiles[index].rating || 0 // Set rating if available
     });
     setCurrentProfileIndex(index);
     setModalVisible(true);
@@ -106,6 +111,14 @@ export default function Workshop() {
         <View style={styles.profileTextContainer}>
           <Text style={styles.profileTitle}>{item.title}</Text>
           <Text style={styles.profileAddress}>{item.address}</Text>
+          <Rating
+            type='star'
+            ratingCount={5}
+            imageSize={20}
+            readonly
+            startingValue={item.rating}
+            style={styles.rating}
+          />
         </View>
         <TouchableOpacity
           style={styles.phoneIconContainer}
@@ -119,7 +132,7 @@ export default function Workshop() {
 
   return (
     <View style={styles.container}>
-      <Header />
+      <Header image={image4}/>
       <View style={styles.content}>
         {profiles.length > 0 ? (
           <FlatList
@@ -192,6 +205,14 @@ export default function Workshop() {
                 onChangeText={(text) => handleChange('email', text)}
                 keyboardType="email-address"
               />
+              <Rating
+                type='star'
+                ratingCount={5}
+                imageSize={30}
+                startingValue={formData.rating}
+                onFinishRating={(rating) => handleChange('rating', rating)}
+                style={styles.rating}
+              />
 
               <TouchableOpacity
                 style={styles.saveButton}
@@ -229,7 +250,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 30,
-    height: 120, // Set the desired height here
+    height: 160, // Increased height to accommodate the rating
   },
   iconContainer: {
     marginRight: 10,
@@ -238,14 +259,23 @@ const styles = StyleSheet.create({
   },
   profileTextContainer: {
     flex: 1,
+    
   },
   profileTitle: {
-    fontSize: 18,
+    fontSize: 28,
     fontWeight: 'bold',
+    marginLeft:10,
   },
   profileAddress: {
     fontSize: 14,
     color: '#666',
+    marginLeft:10,
+  },
+  rating: {
+    alignSelf: 'flex-start',
+    marginVertical: 10,
+    top:20,
+    marginLeft:10,
   },
   phoneIconContainer: {
     marginLeft: 10,
@@ -289,12 +319,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    
   },
   modalContent: {
     width: 300,
     padding: 20,
     backgroundColor: '#fff',
     borderRadius: 10,
+    height:600,
   },
   modalScrollContent: {
     flexGrow: 1,
@@ -319,12 +351,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     marginBottom: 10,
+    top:30,
   },
   closeButton: {
     backgroundColor: '#dc3545',
     padding: 10,
     borderRadius: 5,
     alignItems: 'center',
+    top:30,
+    
   },
   saveButtonText: {
     color: '#fff',

@@ -9,6 +9,7 @@ import { Audio } from 'expo-av'; // Import Audio from expo-av
 import Header from './header';
 import defaultImage from '../assets/default.png';
 import restoreAnimation from '../assets/lottie/restore.json';
+import image2 from '../assets/image2.jpeg';
 
 export default function TrashScreen({ trash, permanentDeleteHandler, restoreHandler }) {
   const animationRef = useRef(null);
@@ -88,7 +89,7 @@ export default function TrashScreen({ trash, permanentDeleteHandler, restoreHand
 
   return (
     <View style={styles.container}>
-      <Header />
+      <Header image={image2}/>
       <View style={styles.content}>
         <FlatList
           data={trash}

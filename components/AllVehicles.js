@@ -5,6 +5,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { Audio } from 'expo-av'; // Import Audio from expo-av
 import Header from './header';
 import defaultImage from '../assets/default.png';
+import image3 from '../assets/image3.jpeg';
 
 export default function AllVehicles({ todos, pressHandler }) {
   // Function to play the delete sound
@@ -49,7 +50,7 @@ export default function AllVehicles({ todos, pressHandler }) {
 
   return (
     <View style={styles.container}>
-      <Header />
+      <Header image={image3}/>
       <View style={styles.content}>
         <FlatList
           data={todos}

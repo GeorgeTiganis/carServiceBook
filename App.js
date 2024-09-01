@@ -15,6 +15,7 @@ import HistoryService from './components/HistoryService';
 import TrashScreen from './components/TrashScreen';
 import Workshop from './components/Workshop';
 import Application from './components/Application'; // Εισαγωγή του Application component
+import image1 from './assets/image1.jpeg';
 
 const Drawer = createDrawerNavigator();
 
@@ -162,7 +163,7 @@ function HomeScreen({ submitHandler, todos, pressHandler }) {
       console.log('dismissed keyboard');
     }}>
       <View style={styles.container}>
-        <Header />
+        <Header image={image1}/>
         <View style={styles.content}>
           <AddTodo submitHandler={(text, category) => submitHandler(text, category, navigation)} />
           <View style={styles.lists}>
