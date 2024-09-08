@@ -141,7 +141,7 @@ export default function Workshop() {
             keyExtractor={(item, index) => index.toString()}
           />
         ) : (
-          <Text>No Profiles Created</Text>
+          <Text>Δεν υπάρχει συνεργείο</Text>
         )}
       </View>
 
@@ -164,36 +164,36 @@ export default function Workshop() {
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <ScrollView contentContainerStyle={styles.modalScrollContent}>
-              <Text style={styles.modalTitle}>{editMode ? 'Edit Workshop Profile' : 'Create Workshop Profile'}</Text>
+              <Text style={styles.modalTitle}>{editMode ? 'Edit Workshop Profile' : 'Δημιουργία συνεργείου'}</Text>
 
               <TextInput
                 style={styles.input}
-                placeholder="Business Name"
+                placeholder="Όνομα επιχείρησης"
                 value={formData.businessName}
                 onChangeText={(text) => handleChange('businessName', text)}
               />
               <TextInput
                 style={styles.input}
-                placeholder="Owner's Name"
+                placeholder="Όνομα ιδιοκτήτη"
                 value={formData.ownerName}
                 onChangeText={(text) => handleChange('ownerName', text)}
               />
               <TextInput
                 style={styles.input}
-                placeholder="Address"
+                placeholder="Διεύθυνση"
                 value={formData.address}
                 onChangeText={(text) => handleChange('address', text)}
               />
               <TextInput
                 style={styles.input}
-                placeholder="Phone"
+                placeholder="Τηλέφωνο"
                 value={formData.phone}
                 onChangeText={(text) => handleChange('phone', text)}
                 keyboardType="phone-pad"
               />
               <TextInput
                 style={styles.input}
-                placeholder="Mobile"
+                placeholder="Κινητό"
                 value={formData.mobile}
                 onChangeText={(text) => handleChange('mobile', text)}
                 keyboardType="numeric"
@@ -218,13 +218,13 @@ export default function Workshop() {
                 style={styles.saveButton}
                 onPress={handleSave}
               >
-                <Text style={styles.saveButtonText}>{editMode ? 'Update' : 'Save'}</Text>
+                <Text style={styles.saveButtonText}>{editMode ? 'Ενημέρωση' : 'Αποθήκευση'}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.closeButton}
                 onPress={() => setModalVisible(false)}
               >
-                <Text style={styles.closeButtonText}>Close</Text>
+                <Text style={styles.closeButtonText}>Ακύρωση</Text>
               </TouchableOpacity>
             </ScrollView>
           </View>

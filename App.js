@@ -9,7 +9,7 @@ import AddTodo from './components/addTodo';
 import * as Font from 'expo-font';
 import 'react-native-gesture-handler';
 import CustomDrawerContent from './components/CustomDrawerContent';
-import AllVehicles from './components/AllVehicles';  
+import AllVehicles from './components/AllVehicles';
 import NextService from './components/NextService';
 import HistoryService from './components/HistoryService';
 import TrashScreen from './components/TrashScreen';
@@ -118,8 +118,8 @@ export default function App() {
             ),
           }}
         >
-          {() => (
-            <AllVehicles todos={todos} pressHandler={pressHandler} />
+          {({ navigation }) => (
+            <AllVehicles todos={todos} pressHandler={pressHandler} navigation={navigation} />
           )}
         </Drawer.Screen>
         <Drawer.Screen
