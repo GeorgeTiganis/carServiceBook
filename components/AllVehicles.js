@@ -7,7 +7,6 @@ import Header from './header';
 import defaultImage from '../assets/default.png';
 import image3 from '../assets/image3.jpeg';
 
-
 export default function AllVehicles({ todos, pressHandler, navigation }) {
   // Function to play the delete sound
   const playDeleteSound = async () => {
