@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, FlatList, Alert, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { StyleSheet, View, FlatList, Alert, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { MaterialIcons } from '@expo/vector-icons';
+import { HeaderBackButton } from '@react-navigation/elements'; // Import HeaderBackButton
 import Header from './components/header';
 import TodoItem from './components/todoitem';
 import AddTodo from './components/addTodo';
@@ -14,7 +15,8 @@ import NextService from './components/NextService';
 import HistoryService from './components/HistoryService';
 import TrashScreen from './components/TrashScreen';
 import Workshop from './components/Workshop';
-import Application from './components/Application'; // Εισαγωγή του Application component
+import Application from './components/Application';
+import EmptyScreen from './components/EmptyScreen'; // Importing EmptyScreen
 import image1 from './assets/image1.jpeg';
 
 const Drawer = createDrawerNavigator();
@@ -69,7 +71,7 @@ export default function App() {
       ]);
     }
   };
-
+  
   return (
     <NavigationContainer>
       <Drawer.Navigator initialRouteName="Αρχική" drawerContent={(props) => <CustomDrawerContent {...props} />}>
@@ -149,6 +151,20 @@ export default function App() {
             ),
           }}
         />
+        <Drawer.Screen
+          name="EmptyScreen"
+          component={EmptyScreen}
+          options={({ navigation }) => ({
+            headerShown: true,
+            headerLeft: () => (
+              <HeaderBackButton
+              onPress={() => navigation.navigate('Ολα τα οχήματα')} // Πηγαίνει στην "Ολα τα οχήματα"
+              label="Back"
+              />
+            ),
+            drawerItemStyle: { display: 'none' } // Απόκρυψη από το μενού
+          })}
+        />
       </Drawer.Navigator>
     </NavigationContainer>
   );
@@ -169,6 +185,7 @@ function HomeScreen({ submitHandler, todos, pressHandler }) {
           <View style={styles.lists}>
             <FlatList
               data={todos}
+              keyExtractor={(item) => item.key}  // Ensures unique keys for list items
               renderItem={({ item }) => (
                 <TodoItem item={item} pressHandler={pressHandler} />
               )}

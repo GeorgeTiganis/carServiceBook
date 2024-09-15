@@ -7,6 +7,7 @@ import Header from './header';
 import defaultImage from '../assets/default.png';
 import image3 from '../assets/image3.jpeg';
 
+
 export default function AllVehicles({ todos, pressHandler, navigation }) {
   // Function to play the delete sound
   const playDeleteSound = async () => {
@@ -59,7 +60,7 @@ export default function AllVehicles({ todos, pressHandler, navigation }) {
                 <Swipeable renderRightActions={() => renderRightActions(item)}>
                   <TouchableOpacity 
                     style={styles.card} 
-                    onPress={() => navigation.navigate('HistoryService', { item })}
+                    onPress={() => navigation.navigate('EmptyScreen', { item })}
                   >
                     <Image
                       style={styles.image}

@@ -18,6 +18,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import SelectType from './SelectType';
 import ImagesTab from './ImagesTab'; // Import the new ImagesTab component
 import Maintenance from './Maintenance.js';
+import { useNavigation } from '@react-navigation/native';
+
 
 
 export default function HistoryService({ todos, pressHandler }) {
@@ -89,9 +91,15 @@ export default function HistoryService({ todos, pressHandler }) {
     setIsEditing(true);
   };
 
+  const navigation = useNavigation();
   const handleSavePress = () => {
     setIsEditing(false);
-    // Perform save operation here
+    navigation.navigate('EmptyScreen', {
+      newService: {
+        ...basicInfo,
+        date: basicInfo.date.toISOString(), // Μετατροπή σε συμβολοσειρά ISO
+      },
+    });
   };
 
   const renderTabContent = () => {
