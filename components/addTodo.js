@@ -1,12 +1,56 @@
 import React, { useState, useRef } from 'react';
-import { View, TextInput, Button, StyleSheet, Animated, Text } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Animated, Text, Alert } from 'react-native';
 import CategoryPicker from './CategoryPicker';
 
-export default function AddTodo({ submitHandler }) {
+export default function AddTodo({ navigation }) {
   const [text, setText] = useState('');
   const [category, setCategory] = useState('Personal');
   const [isFocused, setIsFocused] = useState(false);
   const borderColorAnim = useRef(new Animated.Value(0)).current;
+  const [plateNumber, setPlateNumber] = useState('');
+  const [carBrand, setCarBrand] = useState('');
+  
+  const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
+  const handleSubmit = async () => {
+    if (!plateNumber || !carBrand) {
+      Alert.alert('Error', 'Please fill in all fields.');
+      return;
+    }
+   
+    try {
+      const response = await fetch(`${API_URL}/cars`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          plateNumber: plateNumber,
+          carBrand: carBrand,
+        }),
+      });
+      
+      const result = await response.json();
+      
+      if (response.ok) {
+        Alert.alert('Success', 'Car information has been added.', [
+          {
+            text: 'OK',
+            onPress: () => {
+              setPlateNumber('');
+              setCarBrand('');
+              navigation.navigate('Ολα τα οχήματα');
+            }
+          }
+        ]);
+      } else {
+        Alert.alert('Error', result.message || 'Something went wrong.');
+      }
+    } catch (error) {
+      console.log('error> ',error)
+      Alert.alert('Error', 'Could not connect to the server.');
+    } 
+  };
 
   const changeHandler = (val) => {
     setText(val);
@@ -30,12 +74,6 @@ export default function AddTodo({ submitHandler }) {
     }).start();
   };
 
-  const handleAddTodo = () => {
-    submitHandler(text, category);
-    setText('');
-    setCategory('Personal');
-  }
-
   const borderColor = borderColorAnim.interpolate({
     inputRange: [0, 1],
     outputRange: ['#ddd', '#3498db'], // From light gray to blue
@@ -48,17 +86,17 @@ export default function AddTodo({ submitHandler }) {
         <TextInput
           style={styles.input}
           placeholder='ΧΖΕ - 2439'
-          onChangeText={changeHandler}
-          value={text}
+          onChangeText={setPlateNumber}
+          value={plateNumber}
           onFocus={handleFocus}
           onBlur={handleBlur}
         />
       </Animated.View>
       <CategoryPicker 
         selectedCategory={category}
-        onCategoryChange={setCategory}
+        onCategoryChange={setCarBrand}
       />
-      <Button onPress={handleAddTodo} title='Προσθηκη νεου' color='blue' />
+      <Button onPress={handleSubmit} title='Προσθηκη νεου' color='blue' />
     </View>
   )
 }
