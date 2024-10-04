@@ -79,8 +79,8 @@ export default function TodoItem({ item, pressHandler, isTrash = false }) {
           </TouchableOpacity>
         )}
         <View style={styles.textContainer}>
-          <Text style={styles.itemText}>{item.text}</Text>
-          <Text style={styles.itemCategory}>{item.category}</Text>
+          <Text style={styles.itemText}>{item.carBrand}</Text>
+          <Text style={styles.itemCategory}>{item.plateNumber}</Text>
         </View>
         <TouchableOpacity onPress={() => isTrash ? confirmPermanentDelete(item.key) : confirmDelete(item.key)}>
           <MaterialIcons name='delete' size={25} color='#cc0000' />

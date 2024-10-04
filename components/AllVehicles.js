@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
@@ -6,8 +6,26 @@ import { Audio } from 'expo-av';
 import Header from './header';
 import defaultImage from '../assets/default.png';
 import image3 from '../assets/image3.jpeg';
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-export default function AllVehicles({ todos, pressHandler, navigation }) {
+
+export default function AllVehicles({ pressHandler, navigation }) {
+  const [todos, setTodos] = useState([]);
+
+  useEffect(() => {
+    const fetchTodos = async () => {
+      try {
+        const response = await fetch(`${API_URL}/cars`);
+        const data = await response.json();
+        setTodos(data);
+      } catch (error) {
+        console.error('Error fetching todos:', error);
+      }
+    };
+
+    fetchTodos();
+  }, []);
+
   // Function to play the delete sound
   const playDeleteSound = async () => {
     try {
@@ -29,12 +47,24 @@ export default function AllVehicles({ todos, pressHandler, navigation }) {
       'Are you sure you want to delete this item?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'OK', 
+        {
+          text: 'OK',
           onPress: async () => {
-            await playDeleteSound();
-            pressHandler(key);
-          } 
+            try {
+              await playDeleteSound();
+                const response = await fetch(`${API_URL}cars/${key}`, {
+                method: 'DELETE',
+              });
+                if (response.ok) {
+                console.log('Item deleted successfully.');
+                setTodos((prevTodos) => prevTodos.filter((item) => item.id !== key));
+              } else {
+                console.error('Failed to delete item.');
+              }
+            } catch (error) {
+              console.error('Error deleting item:', error);
+            }
+          },
         },
       ],
       { cancelable: false }
@@ -42,7 +72,7 @@ export default function AllVehicles({ todos, pressHandler, navigation }) {
   };
 
   const renderRightActions = (item) => (
-    <TouchableOpacity onPress={() => confirmDelete(item.key)} style={styles.deleteIconContainer}>
+    <TouchableOpacity onPress={() => confirmDelete(item.id)} style={styles.deleteIconContainer}>
       <Icon name="delete" size={24} color="#fff" />
     </TouchableOpacity>
   );
@@ -67,14 +97,14 @@ export default function AllVehicles({ todos, pressHandler, navigation }) {
                     />
                     <View style={styles.details}>
                       <View style={styles.textContainer}>
-                        <Text style={styles.itemText}>{item.text}</Text>
-                        <Text style={styles.itemCategory}>{item.category}</Text>
+                        <Text style={styles.itemText}>{item.carBrand}</Text>
+                        <Text style={styles.itemCategory}>{item.plateNumber}</Text>
                       </View>
                     </View>
                   </TouchableOpacity>
                 </Swipeable>
               )}
-              keyExtractor={(item) => item.key.toString()}
+              keyExtractor={(item) => item.id}
               contentContainerStyle={styles.listContainer}
             />
           ) : (

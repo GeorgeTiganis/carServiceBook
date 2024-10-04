@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, FlatList, Alert, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -20,19 +20,28 @@ import EmptyScreen from './components/EmptyScreen'; // Importing EmptyScreen
 import image1 from './assets/image1.jpeg';
 
 const Drawer = createDrawerNavigator();
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 const getFonts = () => Font.loadAsync({
   'roboto-regular': require('./assets/fonts/Roboto-Regular.ttf')
 });
 
 export default function App() {
-  const [todos, setTodos] = useState([
-    { text: 'buy coffee', key: '1', category: 'Personal' },
-    { text: 'create my app', key: '2', category: 'Work' },
-    { text: 'play on the switch', key: '3', category: 'Personal' }
-  ]);
+  const [todos, setTodos] = useState([]);
 
   const [trash, setTrash] = useState([]);
+
+  useEffect(() => {
+    // Fetching cars from API
+    fetch(`${API_URL}/cars`)
+      .then((response) => response.json())
+      .then((data) => {
+        setTodos(data);
+      })
+      .catch((error) => {
+        console.error('Error fetching cars:', error);
+      });
+  }, [todos]);
 
   const pressHandler = (key) => {
     setTodos((prevTodos) => {
@@ -176,13 +185,12 @@ function HomeScreen({ submitHandler, todos, pressHandler }) {
   return (
     <TouchableWithoutFeedback onPress={() => {
       Keyboard.dismiss();
-      console.log('dismissed keyboard');
     }}>
       <View style={styles.container}>
         <Header image={image1}/>
         <View style={styles.content}>
-          <AddTodo submitHandler={(text, category) => submitHandler(text, category, navigation)} />
-          <View style={styles.lists}>
+          <AddTodo navigation={navigation} />
+          {/* <View style={styles.lists}>
             <FlatList
               data={todos}
               keyExtractor={(item) => item.key}  // Ensures unique keys for list items
@@ -190,7 +198,7 @@ function HomeScreen({ submitHandler, todos, pressHandler }) {
                 <TodoItem item={item} pressHandler={pressHandler} />
               )}
             />
-          </View>
+          </View> */}
         </View>
       </View>
     </TouchableWithoutFeedback>
@@ -203,6 +211,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   content: {
+    marginTop: 50,
     padding: 40,
   },
   lists: {

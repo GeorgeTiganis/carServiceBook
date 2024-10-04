@@ -6,6 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons'; // For the add icon
 const EmptyScreen = ({ isListEmpty }) => {
   const navigation = useNavigation();
   const route = useRoute(); 
+  const car = route.params?.item
 
   const [services, setServices] = useState([]);
 
@@ -55,7 +56,8 @@ const EmptyScreen = ({ isListEmpty }) => {
 
   return (
     <View style={styles.container}>
-      {/* FlatList for displaying services */}
+      <Text style={styles.infoTitle}>{`Μάρκα Αυτοκινήτου: ${car.carBrand}`}</Text>
+      <Text style={styles.infoTitle}>{`Πινακίδα Αυτοκινήτου: ${car.plateNumber}`}</Text>
       <FlatList
         data={services}
         renderItem={renderItem}
